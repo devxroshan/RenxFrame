@@ -41,7 +41,7 @@ export class AuthController {
     const accessToken = await this.authService.loginUser(loginDto);
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
+      secure: true,
       sameSite: 'none',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
@@ -73,7 +73,7 @@ export class AuthController {
     );
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
+      secure: true,
       sameSite: 'none',
       maxAge: 28 * 24 * 60 * 60 * 1000, // 28 days
     });
