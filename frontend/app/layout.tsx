@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 
+// Wrappers
+import QueryClientProviderWrapper from "./Wrappers/QueryClientProviderWrapper";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal"],
 });
-
 
 export const metadata: Metadata = {
   title: "RenxFrame",
@@ -22,11 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${poppins.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <QueryClientProviderWrapper>
+        <body className={`${poppins.variable} antialiased`}>{children}</body>
+      </QueryClientProviderWrapper>
     </html>
   );
 }
