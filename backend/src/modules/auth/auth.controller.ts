@@ -4,10 +4,11 @@ import { AuthCreateDto } from "./dto/auth-create.dto";
 import { AuthLoginDto } from "./dto/auth-login.dto";
 import * as express from 'express';
 import { AuthGuard } from "@nestjs/passport/dist/auth.guard";
+import { ConfigService } from "@nestjs/config";
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
 
     @Post('signup')
     async signup(@Body() signupDto: AuthCreateDto, @Res({passthrough: true}) res:express.Response) {
@@ -48,9 +49,9 @@ export class AuthController {
         const accessToken = await this.authService.googleLogin(req.user as { email: string; displayName: string, profilePicUrl: string });
         res.cookie('access_token', accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 28 * 24 * 60 * 60 * 1000, // 7 days
+            secure: this.configService.get('NODE_ENV') === 'production',
+            sameSite: this.configService.get('NODE_ENV') === 'production' ? 'none' : 'lax',
+            maxAge: 28 * 24 * 60 * 60 * 1000, // 28 days
         });
         return {
             ok: true,
