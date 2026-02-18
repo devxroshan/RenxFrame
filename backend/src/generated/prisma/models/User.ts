@@ -30,6 +30,7 @@ export type UserMinAggregateOutputType = {
   name: string | null
   password: string | null
   profilePicUrl: string | null
+  isVerified: boolean | null
   isGoogleUser: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +42,7 @@ export type UserMaxAggregateOutputType = {
   name: string | null
   password: string | null
   profilePicUrl: string | null
+  isVerified: boolean | null
   isGoogleUser: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -52,6 +54,7 @@ export type UserCountAggregateOutputType = {
   name: number
   password: number
   profilePicUrl: number
+  isVerified: number
   isGoogleUser: number
   createdAt: number
   updatedAt: number
@@ -65,6 +68,7 @@ export type UserMinAggregateInputType = {
   name?: true
   password?: true
   profilePicUrl?: true
+  isVerified?: true
   isGoogleUser?: true
   createdAt?: true
   updatedAt?: true
@@ -76,6 +80,7 @@ export type UserMaxAggregateInputType = {
   name?: true
   password?: true
   profilePicUrl?: true
+  isVerified?: true
   isGoogleUser?: true
   createdAt?: true
   updatedAt?: true
@@ -87,6 +92,7 @@ export type UserCountAggregateInputType = {
   name?: true
   password?: true
   profilePicUrl?: true
+  isVerified?: true
   isGoogleUser?: true
   createdAt?: true
   updatedAt?: true
@@ -171,6 +177,7 @@ export type UserGroupByOutputType = {
   name: string
   password: string | null
   profilePicUrl: string | null
+  isVerified: boolean
   isGoogleUser: boolean
   createdAt: Date
   updatedAt: Date
@@ -203,6 +210,7 @@ export type UserWhereInput = {
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
   profilePicUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
   isGoogleUser?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -214,6 +222,7 @@ export type UserOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isGoogleUser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -228,6 +237,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
   profilePicUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
   isGoogleUser?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -239,6 +249,7 @@ export type UserOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isGoogleUser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -256,6 +267,7 @@ export type UserScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   profilePicUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  isVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isGoogleUser?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -267,6 +279,7 @@ export type UserCreateInput = {
   name: string
   password?: string | null
   profilePicUrl?: string | null
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -278,6 +291,7 @@ export type UserUncheckedCreateInput = {
   name: string
   password?: string | null
   profilePicUrl?: string | null
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -289,6 +303,7 @@ export type UserUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profilePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGoogleUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -300,6 +315,7 @@ export type UserUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profilePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGoogleUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -311,6 +327,7 @@ export type UserCreateManyInput = {
   name: string
   password?: string | null
   profilePicUrl?: string | null
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -322,6 +339,7 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profilePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGoogleUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -333,6 +351,7 @@ export type UserUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profilePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGoogleUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -344,6 +363,7 @@ export type UserCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isGoogleUser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -355,6 +375,7 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isGoogleUser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -366,6 +387,7 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isGoogleUser?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -395,6 +417,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   password?: boolean
   profilePicUrl?: boolean
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -406,6 +429,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   password?: boolean
   profilePicUrl?: boolean
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -417,6 +441,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   password?: boolean
   profilePicUrl?: boolean
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -428,12 +453,13 @@ export type UserSelectScalar = {
   name?: boolean
   password?: boolean
   profilePicUrl?: boolean
+  isVerified?: boolean
   isGoogleUser?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "profilePicUrl" | "isGoogleUser" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "profilePicUrl" | "isVerified" | "isGoogleUser" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
@@ -444,6 +470,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     password: string | null
     profilePicUrl: string | null
+    isVerified: boolean
     isGoogleUser: boolean
     createdAt: Date
     updatedAt: Date
@@ -875,6 +902,7 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly profilePicUrl: Prisma.FieldRef<"User", 'String'>
+  readonly isVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly isGoogleUser: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

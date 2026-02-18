@@ -11,17 +11,8 @@ export class AuthController {
 
     @Post('signup')
     async signup(@Body() signupDto: AuthCreateDto, @Res({passthrough: true}) res:express.Response) {
-        const accessToken = await this.authService.createUser(signupDto);
-        res.cookie('access_token', accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 28 * 24 * 60 * 60 * 1000, // 7 days
-        });
-        return {
-            ok: true,
-            msg: "SignUp Successfully"
-        };
+        const result = await this.authService.createUser(signupDto);
+        return result;
     }
 
     @Get('login')
@@ -37,6 +28,11 @@ export class AuthController {
             ok: true,
             msg: "Login Successfully"
         };
+    }
+
+    @Get('verify-email')
+    async verifyEmail(@Query('token') token: string) {
+        return await this.authService.verifyEmail(token);
     }
 
     @Get('google')

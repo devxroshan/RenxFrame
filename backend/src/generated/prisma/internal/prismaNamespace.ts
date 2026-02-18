@@ -523,6 +523,7 @@ export const UserScalarFieldEnum = {
   name: 'name',
   password: 'password',
   profilePicUrl: 'profilePicUrl',
+  isVerified: 'isVerified',
   isGoogleUser: 'isGoogleUser',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

@@ -4,14 +4,19 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './common/database/prisma.module';
+import { CommonModule } from './common/common.module';
+import { JWTCoreModule } from './core-modules/jwt.module';
+
 
 @Module({
   imports: [
-      ConfigModule.forRoot({
-        isGlobal: true,
-      }),
-      AuthModule,
-      PrismaModule
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
+    PrismaModule,
+    JWTCoreModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

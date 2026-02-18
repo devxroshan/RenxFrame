@@ -9,6 +9,8 @@ import { AllExceptionFilter } from './common/filters/AllExceptionFilter.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api');
+
   app.enableCors({
     origin: [app.get(ConfigService).get('FRONTEND_URL') ?? 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],

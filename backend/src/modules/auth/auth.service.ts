@@ -3,13 +3,16 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthCreateDto } from './dto/auth-create.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { PrismaService } from 'src/common/database/prisma.service';
 import * as argon2 from 'argon2';
-import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { JwtService } from '@nestjs/jwt';
+import { EmailService } from 'src/common/services/email.service';
+
 
 @Injectable()
 export class AuthService {
@@ -17,13 +20,14 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService
   ) {}
 
   async createUser(userDto: AuthCreateDto) {
     const hashedPassword = await argon2.hash(userDto.password);
 
     try {
-      await this.prismaService.user.create({
+      const user = await this.prismaService.user.create({
         data: {
           name: userDto.name,
           email: userDto.email,
@@ -31,12 +35,21 @@ export class AuthService {
         },
       });
 
-      const accessToken = this.jwtService.sign(
-        { email: userDto.email },
-        { secret: this.configService.get<string>('JWT_SECRET') },
+      await this.emailService.sendWelcomeEmail(user.email, user.name);
+
+      const verificationToken = this.jwtService.sign(
+        { email: user.email },
+        { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '2m' },
       );
 
-      return accessToken;
+      const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
+
+      await this.emailService.sendVerificationEmail(user.name, verificationLink, user.email, '2 minutes');
+
+      return {
+        ok: true,
+        msg: 'User created successfully. Please check your email for verification.',
+      };
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ConflictException({
@@ -54,92 +67,189 @@ export class AuthService {
         name: 'InternalServerError',
         msg: 'Failed to create user',
         code: 'FAILED_TO_CREATE_USER',
+        details: this.configService.get('NODE_ENV') === 'development' ? { error } : {},
       });
     }
   }
 
   async loginUser(loginDto: AuthLoginDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email: loginDto.email,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException({
+        name: 'BadRequestException',
+        msg: 'Invalid email or password',
+        code: 'INVALID_CREDENTIALS',
+      });
+    }
+
+    if (user.isGoogleUser || !user.password) {
+      // Later we can send a password reset email here to let them set a password if they want to use email/password login in the future
+
+      throw new BadRequestException({
+        name: 'BadRequestException',
+        msg: 'Please login with Google',
+        code: 'GOOGLE_USER',
+      });
+    }
+
+    if (!user.isVerified) {
+      const verificationToken = this.jwtService.sign(
+        { email: user.email },
+        { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '2m' },
+      );
+      const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
+
+      await this.emailService.sendVerificationEmail(user.name, verificationLink, user.email, '2 minutes');
+
+      throw new UnauthorizedException({
+        name: 'UnauthorizedException',
+        msg: 'Please verify your email before logging in. Sent you a verification email.',
+        code: 'EMAIL_NOT_VERIFIED',
+      });
+    }
+
+    const isPasswordValid = await argon2.verify(
+      user?.password,
+      loginDto.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new BadRequestException({
+        name: 'BadRequestException',
+        msg: 'Invalid email or password',
+        code: 'INVALID_CREDENTIALS',
+      });
+    }
+
+    const accessToken = this.jwtService.sign(
+      { email: user.email },
+      { secret: this.configService.get<string>('JWT_SECRET') },
+    );
+
+    return accessToken;
+  }
+
+  async verifyEmail(token: string) {
     try {
-      const user = await this.prismaService.user.findUnique({
-        where: {
-          email: loginDto.email,
-        },
+      const decoded = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      if (!user) {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Invalid email or password',
-          code: 'INVALID_CREDENTIALS',
-        });
-      }
-
-      if(user.isGoogleUser || !user.password) {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Please login with Google',
-          code: 'GOOGLE_USER',
-        });
-      }
-
-      const isPasswordValid = await argon2.verify(
-        user?.password,
-        loginDto.password,
-      );
-
-      if (!isPasswordValid) {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Invalid email or password',
-          code: 'INVALID_CREDENTIALS',
-        });
-      }
-
-      const accessToken = this.jwtService.sign(
-        { email: user.email },
-        { secret: this.configService.get<string>('JWT_SECRET') },
-      );
-
-      return accessToken;
+      await this.prismaService.user.update({
+        where: {
+          email: decoded.email,
+          isVerified: false,
+        },
+        data: {
+          isVerified: true,
+        },
+      });
+      return {
+        ok: true,
+        msg: 'Email verified successfully',
+      };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
+      console.log('Email verification error:', error);
+      if (error.name === 'TokenExpiredError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Verification token has expired. Please request a new verification email.',
+          code: 'TOKEN_EXPIRED',
+        });
+      }
+      if(error.name === 'JsonWebTokenError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Invalid verification token. Please request a new verification email.',
+          code: 'INVALID_TOKEN',
+        });
       }
       throw new InternalServerErrorException({
+        ok: false,
         name: 'InternalServerError',
-        msg: 'Failed to login',
-        code: 'FAILED_TO_LOGIN',
+        msg: 'Failed to verify email',
+        code: 'FAILED_TO_VERIFY_EMAIL',
+        details: error,
       });
     }
   }
 
-  async googleLogin(user: { email: string; displayName: string, profilePicUrl: string }) {
-    try {
-      const existingUser = await this.prismaService.user.findUnique({
-        where: {
-          email: user.email,
-        },
-      });
+  async googleLogin(user: {
+    email: string;
+    displayName: string;
+    profilePicUrl: string;
+  }) {
+    let existingUser = await this.prismaService.user.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
 
+    try {
       if (!existingUser) {
-        await this.prismaService.user.create({
+        existingUser = await this.prismaService.user.create({
           data: {
             name: user.displayName,
             email: user.email,
             profilePicUrl: user.profilePicUrl,
             isGoogleUser: true,
+            isVerified: true,
+          },
+        });
+      }
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException({
+          name: 'ConflictException',
+          msg: 'Email already exists',
+          code: 'EMAIL_ALREADY_EXISTS',
+          details: {
+            field: 'email',
+            value: user.email,
           },
         });
       }
 
-      const accessToken = this.jwtService.sign(
-        { email: user.email },
-        { secret: this.configService.get<string>('JWT_SECRET') },
-      );
-
-      return accessToken;
-    } catch (error) {
-      throw error;
+      throw new InternalServerErrorException({
+        ok: false,
+        name: 'InternalServerError',
+        msg: 'Failed to create Google user',
+        code: 'FAILED_TO_CREATE_GOOGLE_USER',
+      });
     }
+
+    if (!existingUser.isGoogleUser) {
+      existingUser = await this.prismaService.user.update({
+        where: {
+          email: user.email,
+        },
+        data: {
+          isGoogleUser: true,
+        },
+      });
+    }
+
+    if (!existingUser.isVerified) {
+      existingUser = await this.prismaService.user.update({
+        where: {
+          email: user.email,
+        },
+        data: {
+          isVerified: true,
+        },
+      });
+    }
+
+    const accessToken = this.jwtService.sign(
+      { email: user.email },
+      { secret: this.configService.get<string>('JWT_SECRET') },
+    );
+
+    return accessToken;
   }
 }
