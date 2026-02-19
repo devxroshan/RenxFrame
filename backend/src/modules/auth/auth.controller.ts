@@ -58,9 +58,7 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // This route will be handled by the GoogleStrategy
-  }
+  async googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
@@ -71,15 +69,17 @@ export class AuthController {
     const accessToken = await this.authService.googleLogin(
       req.user as { email: string; displayName: string; profilePicUrl: string },
     );
+
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 28 * 24 * 60 * 60 * 1000, // 28 days
+      secure: this.configService.get('NODE_ENV') as string == 'production', // 🔥 true in production (https only)
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 28,
     });
-    return {
-      ok: true,
-      msg: 'Login Successfully',
-    };
+
+    return res.redirect(
+      this.configService.get('LOGGED_IN_FRONTEND_URL') as string,
+    );
   }
 }

@@ -92,7 +92,7 @@ export class AuthService {
 
       throw new BadRequestException({
         name: 'BadRequestException',
-        msg: 'Please login with Google',
+        msg: "You had Signed Up with Google so you don't have any password right now, Please login with Google or You can just forgot password to reset your password.",
         code: 'GOOGLE_USER',
       });
     }
