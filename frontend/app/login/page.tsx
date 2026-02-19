@@ -43,7 +43,10 @@ const Login = () => {
       <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] h-[70vh] rounded-xl border border-primary-border">
         <div className="w-full h-full bg-white rounded-lg"></div>
 
-        <div className="w-[60%] h-full flex flex-col items-start justify-start gap-4">
+        <div className="w-[60%] h-full flex flex-col items-start justify-start gap-4" onKeyDown={(e) => {
+          if(e.key == 'enter')
+            handleLogin()
+        }}>
           <span className="text-xl font-semibold">Login</span>
 
           <div className="flex flex-col gap-2 items-center justify-center w-full">
@@ -80,6 +83,10 @@ const Login = () => {
             <Button
               variant={ButtonVariant.SECONDARY_OUTLINE}
               text="Login with Google"
+              onClick={() => {
+                if(window)
+                  window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`
+              }}
             />
             <div>
               <span className="text-sm font-semibold">
