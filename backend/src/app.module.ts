@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './common/database/prisma.module';
 import { CommonModule } from './common/common.module';
-import { JWTCoreModule } from './core-modules/jwt.module';
 import { AccountModule } from './modules/account/account.module';
 
 
@@ -17,7 +16,6 @@ import { AccountModule } from './modules/account/account.module';
     AuthModule,
     AccountModule,
     PrismaModule,
-    JWTCoreModule,
     CommonModule,
   ],
   controllers: [AppController],

@@ -271,23 +271,17 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    if (!email || typeof email != 'string')
-      throw new BadRequestException({
-        name: 'BadRequestException',
-        code: 'INVALID_EMAIL',
-        msg: 'Email is required.',
-      });
-
-    const resetPasswordToken = this.jwtService.sign(
+    const resetPasswordToken = await this.jwtService.signAsync(
       { email },
-      { expiresIn: '2m' },
+      { secret: this.configService.get('JWT_SECRET'), expiresIn: '2m' },
     );
+
     const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
 
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
-      },
+      }
     });
 
     if (!user) {
@@ -298,18 +292,21 @@ export class AuthService {
       });
     }
 
-    await this.emailService.sendForgotPasswordEmail(
-      email,
-      user.name,
-      resetPasswordLink,
-      '2 minutes',
-      this.configService.get('SUPPORT_EMAIL') as string,
-    );
-
-    return {
-      ok: true,
-      msg: 'Reset Password link sent to your email. Check your inbox or spam folder.',
-    };
+    try {
+      await this.emailService.sendForgotPasswordEmail(
+        email,
+        user.name,
+        resetPasswordLink,
+        '2 minutes',
+        this.configService.get('SUPPORT_EMAIL') as string,
+      );
+      return {
+        ok: true,
+        msg: 'Reset Password link sent to your email. Check your inbox or spam folder.',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
@@ -340,8 +337,8 @@ export class AuthService {
 
       return {
         ok: true,
-        msg: 'Password reset successfully.'
-      }
+        msg: 'Password reset successfully.',
+      };
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new BadRequestException({
@@ -410,17 +407,17 @@ export class AuthService {
       },
     });
 
-    if(!user){
+    if (!user) {
       throw new NotFoundException({
-        name: "NotFoundException",
+        name: 'NotFoundException',
         code: 'USER_NOT_FOUND',
-        msg: 'Either not logged in or invalid token.'
-      })
+        msg: 'Either not logged in or invalid token.',
+      });
     }
 
     return {
       ok: true,
-      msg: 'Logged In.'
-    }
+      msg: 'Logged In.',
+    };
   }
 }
