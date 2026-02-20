@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './common/database/prisma.module';
 import { CommonModule } from './common/common.module';
 import { JWTCoreModule } from './core-modules/jwt.module';
+import { AccountModule } from './modules/account/account.module';
 
 
 @Module({
@@ -14,6 +15,7 @@ import { JWTCoreModule } from './core-modules/jwt.module';
       isGlobal: true,
     }),
     AuthModule,
+    AccountModule,
     PrismaModule,
     JWTCoreModule,
     CommonModule,
