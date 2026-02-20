@@ -271,9 +271,9 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const resetPasswordToken = await this.jwtService.signAsync(
+    const resetPasswordToken = this.jwtService.sign(
       { email },
-      { secret: this.configService.get('JWT_SECRET'), expiresIn: '2m' },
+      { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '5' },
     );
 
     const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
@@ -297,7 +297,7 @@ export class AuthService {
         email,
         user.name,
         resetPasswordLink,
-        '2 minutes',
+        '5 minutes',
         this.configService.get('SUPPORT_EMAIL') as string,
       );
       return {
@@ -321,10 +321,10 @@ export class AuthService {
     const passwordHash = await argon2.hash(resetPasswordDto.confirmPassword);
 
     try {
-      const decodedToken = (await this.jwtService.verifyAsync(
+      const decodedToken = await this.jwtService.verify(
         resetPasswordDto.token,
         this.configService.get('JWT_SECRET'),
-      )) as { email: string };
+      );
 
       await this.prismaService.user.update({
         where: {
