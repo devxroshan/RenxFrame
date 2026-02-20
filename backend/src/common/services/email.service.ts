@@ -45,4 +45,21 @@ export class EmailService {
       throw error;
     }
   }
+  async sendForgotPasswordEmail(email: string, name:string, resetLink:string, expiryTime:string, supportEmail: string) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Forgot Password',
+        template: './forgot-password',
+        context: {
+          name,
+          resetLink,
+          expiryTime,
+          supportEmail 
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }

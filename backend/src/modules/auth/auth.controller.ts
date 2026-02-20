@@ -16,6 +16,7 @@ import { AuthLoginDto } from './dto/auth-login.dto';
 import * as express from 'express';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { ConfigService } from '@nestjs/config';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -81,5 +82,20 @@ export class AuthController {
     return res.redirect(
       this.configService.get('LOGGED_IN_FRONTEND_URL') as string,
     );
+  }
+
+  @Get('forgot-password')
+  async forgotPassword(@Query('email') email: string){
+    return await this.authService.forgotPassword(email);
+  }
+
+  @Put('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto){
+    return await this.authService.resetPassword(resetPasswordDto);
+  }
+  
+  @Get('is-logged-in')
+  async isLoggedIn(@Query('token') token:string){
+    return await this.authService.isLoggedIn(token)
   }
 }

@@ -2,32 +2,60 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../database/prisma.service';
+import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 
 export class IsLoggedInGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly prismaService: PrismaService,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest();
       const token = request.cookies?.access_token;
       if (!token) {
-        return false;
+        throw new BadRequestException({
+          name: 'Unauthorized',
+          code: 'NO_TOKEN',
+          msg: 'You are not logged in.',
+        });
       }
       const decoded = this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      request.decodedToken = decoded as {
-        email: string;
-      };
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          email: decoded.email,
+        },
+        select: {
+          name: true,
+          email: true,
+          isVerified: true,
+          isGoogleUser: true,
+          profilePicUrl: true,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException({
+          name: 'NotFoundException',
+          code: 'USER_NOT_FOUND',
+          msg: 'User not found. Invalid token or not logged in.',
+        });
+      }
+
+      request.user = user
+      return true;
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
+      if (error instanceof TokenExpiredError) {
         throw new BadRequestException({
           name: 'TokenExpiredError',
           msg: 'Your session has expired. Please log in again.',
@@ -35,7 +63,7 @@ export class IsLoggedInGuard implements CanActivate {
         });
       }
 
-      if (error.name === 'JsonWebTokenError') {
+      if (error instanceof JsonWebTokenError) {
         throw new BadRequestException({
           name: 'JsonWebTokenError',
           msg: 'Invalid token. Please log in again.',
@@ -44,6 +72,5 @@ export class IsLoggedInGuard implements CanActivate {
       }
       throw error;
     }
-    return true;
   }
 }

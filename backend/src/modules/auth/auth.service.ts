@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,7 +13,7 @@ import { PrismaService } from 'src/common/database/prisma.service';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/common/services/email.service';
-
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
   ) {}
 
   async createUser(userDto: AuthCreateDto) {
@@ -39,12 +40,20 @@ export class AuthService {
 
       const verificationToken = this.jwtService.sign(
         { email: user.email },
-        { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '2m' },
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: '2m',
+        },
       );
 
       const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
 
-      await this.emailService.sendVerificationEmail(user.name, verificationLink, user.email, '2 minutes');
+      await this.emailService.sendVerificationEmail(
+        user.name,
+        verificationLink,
+        user.email,
+        '2 minutes',
+      );
 
       return {
         ok: true,
@@ -67,7 +76,8 @@ export class AuthService {
         name: 'InternalServerError',
         msg: 'Failed to create user',
         code: 'FAILED_TO_CREATE_USER',
-        details: this.configService.get('NODE_ENV') === 'development' ? { error } : {},
+        details:
+          this.configService.get('NODE_ENV') === 'development' ? { error } : {},
       });
     }
   }
@@ -100,11 +110,19 @@ export class AuthService {
     if (!user.isVerified) {
       const verificationToken = this.jwtService.sign(
         { email: user.email },
-        { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '2m' },
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: '2m',
+        },
       );
       const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
 
-      await this.emailService.sendVerificationEmail(user.name, verificationLink, user.email, '2 minutes');
+      await this.emailService.sendVerificationEmail(
+        user.name,
+        verificationLink,
+        user.email,
+        '2 minutes',
+      );
 
       throw new UnauthorizedException({
         name: 'UnauthorizedException',
@@ -154,7 +172,6 @@ export class AuthService {
         msg: 'Email verified successfully',
       };
     } catch (error) {
-      console.log('Email verification error:', error);
       if (error.name === 'TokenExpiredError') {
         throw new BadRequestException({
           name: 'BadRequestException',
@@ -162,7 +179,7 @@ export class AuthService {
           code: 'TOKEN_EXPIRED',
         });
       }
-      if(error.name === 'JsonWebTokenError') {
+      if (error.name === 'JsonWebTokenError') {
         throw new BadRequestException({
           name: 'BadRequestException',
           msg: 'Invalid verification token. Please request a new verification email.',
@@ -251,5 +268,159 @@ export class AuthService {
     );
 
     return accessToken;
+  }
+
+  async forgotPassword(email: string) {
+    if (!email || typeof email != 'string')
+      throw new BadRequestException({
+        name: 'BadRequestException',
+        code: 'INVALID_EMAIL',
+        msg: 'Email is required.',
+      });
+
+    const resetPasswordToken = this.jwtService.sign(
+      { email },
+      { expiresIn: '2m' },
+    );
+    const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
+
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        name: 'NotFoundException',
+        code: 'USER_NOT_FOUND',
+        msg: 'User not found. Invalid email',
+      });
+    }
+
+    await this.emailService.sendForgotPasswordEmail(
+      email,
+      user.name,
+      resetPasswordLink,
+      '2 minutes',
+      this.configService.get('SUPPORT_EMAIL') as string,
+    );
+
+    return {
+      ok: true,
+      msg: 'Reset Password link sent to your email. Check your inbox or spam folder.',
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
+      throw new BadRequestException({
+        name: 'BadRequestException',
+        code: 'PASSWORD_IS_NOT_NEW_PASSWORD',
+        msg: 'Password and New Password should be exactly',
+      });
+    }
+
+    const passwordHash = await argon2.hash(resetPasswordDto.confirmPassword);
+
+    try {
+      const decodedToken = (await this.jwtService.verifyAsync(
+        resetPasswordDto.token,
+        this.configService.get('JWT_SECRET'),
+      )) as { email: string };
+
+      await this.prismaService.user.update({
+        where: {
+          email: decodedToken.email,
+        },
+        data: {
+          password: passwordHash,
+        },
+      });
+
+      return {
+        ok: true,
+        msg: 'Password reset successfully.'
+      }
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Reset Password token has expired. Please request a new Reset Password token.',
+          code: 'TOKEN_EXPIRED',
+        });
+      }
+      if (error.name === 'JsonWebTokenError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Invalid Reset Password token. Please request a new Reset Password token.',
+          code: 'INVALID_TOKEN',
+        });
+      }
+
+      if (error.code === 'P2025') {
+        throw new NotFoundException({
+          name: 'NotFoundException',
+          code: 'USER_NOT_FOUND',
+          msg: 'User not found. Password reset failed.',
+        });
+      }
+
+      throw new InternalServerErrorException({
+        name: 'InternaleServerError',
+        code: 'INTERNAL_SERVER_ERROR',
+        msg: 'Something went wrong. Try again later.',
+      });
+    }
+  }
+
+  async isLoggedIn(token: string) {
+    let decodedToken: { email: string };
+
+    try {
+      decodedToken = (await this.jwtService.verifyAsync(token)) as {
+        email: string;
+      };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Reset Password token has expired. Please request a new Reset Password token.',
+          code: 'TOKEN_EXPIRED',
+        });
+      }
+      if (error.name === 'JsonWebTokenError') {
+        throw new BadRequestException({
+          name: 'BadRequestException',
+          msg: 'Invalid Reset Password token. Please request a new Reset Password token.',
+          code: 'INVALID_TOKEN',
+        });
+      }
+
+      throw new InternalServerErrorException({
+        name: 'InternaleServerError',
+        code: 'INTERNAL_SERVER_ERROR',
+        msg: 'Something went wrong. Try again later.',
+      });
+    }
+
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email: decodedToken.email,
+      },
+    });
+
+    if(!user){
+      throw new NotFoundException({
+        name: "NotFoundException",
+        code: 'USER_NOT_FOUND',
+        msg: 'Either not logged in or invalid token.'
+      })
+    }
+
+    return {
+      ok: true,
+      msg: 'Logged In.'
+    }
   }
 }
