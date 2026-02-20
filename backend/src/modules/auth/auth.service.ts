@@ -198,7 +198,7 @@ export class AuthService {
 
   async googleLogin(user: {
     email: string;
-    displayName: string;
+    name: string;
     profilePicUrl: string;
   }) {
     let existingUser = await this.prismaService.user.findUnique({
@@ -211,7 +211,7 @@ export class AuthService {
       if (!existingUser) {
         existingUser = await this.prismaService.user.create({
           data: {
-            name: user.displayName,
+            name: user.name,
             email: user.email,
             profilePicUrl: user.profilePicUrl,
             isGoogleUser: true,

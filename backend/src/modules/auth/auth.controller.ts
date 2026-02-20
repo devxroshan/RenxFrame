@@ -68,7 +68,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: express.Response,
   ) {
     const accessToken = await this.authService.googleLogin(
-      req.user as { email: string; displayName: string; profilePicUrl: string },
+      req.user as { email: string; name: string; profilePicUrl: string },
     );
 
     res.cookie('access_token', accessToken, {
