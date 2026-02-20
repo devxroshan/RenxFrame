@@ -40,7 +40,7 @@ const SignUp = () => {
         <div className="w-full h-full bg-white rounded-lg"></div>
 
         <div className="w-[60%] h-full flex flex-col items-start justify-start gap-4" onKeyDown={(e) => {
-          if(e.key == 'enter')
+          if(e.key == 'Enter')
             handleSignUp()
         }}>
           <span className="text-xl font-semibold">Sign Up</span>

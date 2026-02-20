@@ -22,7 +22,7 @@ const Input = ({variant, type, placeholder, value, onChange, extendStyle}:InputP
         type={type || "text"} 
         placeholder={placeholder || "Name"} 
         className={`w-full px-2 py-1 font-medium rounded-lg border border-primary-border focus:outline-none focus:ring-2 focus:ring-primary-blue ${extendStyle || ''}`} 
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
       />}
     </>

@@ -13,3 +13,17 @@ export const LoginAPI = async ({email, password}:{email:string, password:string}
     const response = await api.get(`/auth/login?email=${email}&password=${password}`)
     return response.data;
 }
+
+export const ForgotPasswordAPI = async ({email}:{email:string}) => {
+    const response = await api.get(`/auth/forgot-password?email=${email}`)
+    return response.data;
+}
+
+export const ResetPasswordAPI = async ({token, newPassword, confirmPassword}:{token:string, newPassword:string, confirmPassword: string}) => {
+    const response = await api.put(`/auth/reset-password`, {
+        token,
+        password:newPassword,
+        confirmPassword
+    })
+    return response.data;
+}
