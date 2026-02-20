@@ -97,9 +97,7 @@ export class AuthService {
       });
     }
 
-    if (user.isGoogleUser || !user.password) {
-      // Later we can send a password reset email here to let them set a password if they want to use email/password login in the future
-
+    if (!user.password) {
       throw new BadRequestException({
         name: 'BadRequestException',
         msg: "You had Signed Up with Google so you don't have any password right now, Please login with Google or You can just forgot password to reset your password.",
@@ -273,7 +271,7 @@ export class AuthService {
   async forgotPassword(email: string) {
     const resetPasswordToken = this.jwtService.sign(
       { email },
-      { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '5' },
+      { secret: this.configService.get<string>('JWT_SECRET') as string, expiresIn: '5m', algorithm: 'HS512' },
     );
 
     const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
@@ -323,7 +321,9 @@ export class AuthService {
     try {
       const decodedToken = await this.jwtService.verify(
         resetPasswordDto.token,
-        this.configService.get('JWT_SECRET'),
+        {
+          secret: this.configService.get<string>('JWT_SECRET') as string
+        }
       );
 
       await this.prismaService.user.update({
