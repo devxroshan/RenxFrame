@@ -12,7 +12,18 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: [app.get(ConfigService).get('FRONTEND_URL') ?? 'http://localhost:3000'],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (
+        origin === app.get(ConfigService).get<string>("FRONTEND_URL") ||
+        origin.endsWith(app.get(ConfigService).get<string>("TRIMED_FRONTEND_URL"))
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
@@ -43,7 +54,6 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionFilter(app.get(ConfigService)));
 
-  
   await app.listen(app.get(ConfigService).get('PORT') ?? 8000);
 }
 bootstrap();
