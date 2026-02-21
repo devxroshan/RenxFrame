@@ -8,6 +8,11 @@ import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
 import { ResetPasswordAPI } from "../api/auth.api";
 
+// Stores
+import { useAppStore } from "../stores/app.store";
+import { ToastIcon } from "../config/types.config";
+import { APIErrorReseponse } from "../config/api.config";
+
 interface ResetPasswordForm {
   newPassword: string;
   confirmPassword: string;
@@ -23,6 +28,7 @@ interface PasswordChecks {
 }
 
 const ResetPassword = () => {
+  // States
   const [resetPasswordForm, setResetPasswordForm] = useState<ResetPasswordForm>(
     { newPassword: "", confirmPassword: "" },
   );
@@ -39,6 +45,9 @@ const ResetPassword = () => {
   // Hooks
   const searchParams = useSearchParams()
   const router = useRouter()
+
+  // Stores
+  const appStore = useAppStore();
 
   const handleValidation = () => {
     setPasswordChecks({
@@ -58,9 +67,12 @@ const ResetPassword = () => {
 
   const handleResetPassword = () => {
     if(!searchParams.get('token')){
-      // Later toast will be implemented.
-
-      throw new Error('No token query is provided.')
+      appStore.addToast({
+        msg: 'No token provided.',
+        code: "TOKEN_NOT_FOUND",
+        iconType: ToastIcon.ERROR
+      })
+      return
     }
 
     if(Object.values(passwordChecks).every(value => value !== true)) return;
@@ -85,9 +97,14 @@ const ResetPassword = () => {
         router.push('/login')
         return 
       }
-      console.log(data)
     },
-    onError: (error) => {}
+    onError: (error: APIErrorReseponse) => {
+      appStore.addToast({
+        msg: error.msg,
+        code: error.code,
+        iconType: error.status == 500?ToastIcon.ERROR:ToastIcon.WARNING
+      })
+    }
   })
 
   return (

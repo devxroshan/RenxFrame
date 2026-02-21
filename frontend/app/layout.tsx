@@ -5,6 +5,9 @@ import "./globals.css";
 // Wrappers
 import QueryClientProviderWrapper from "./Wrappers/QueryClientProviderWrapper";
 
+// Components
+import ToastContainer from "./components/ToastContainer";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -25,7 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryClientProviderWrapper>
-        <body className={`${poppins.variable} antialiased`}>{children}</body>
+        <body className={`${poppins.variable} antialiased`}>
+          {children}
+          <ToastContainer/>
+        </body>
       </QueryClientProviderWrapper>
     </html>
   );

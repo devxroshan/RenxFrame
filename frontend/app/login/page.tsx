@@ -7,8 +7,13 @@ import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
 
+// Stores
+import { useAppStore } from "../stores/app.store";
+
 // API
 import { ForgotPasswordAPI, LoginAPI } from "../api/auth.api";
+import { ToastIcon } from "../config/types.config";
+import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
 
 const Login = () => {
   // States
@@ -21,20 +26,40 @@ const Login = () => {
   // Hooks
   const router = useRouter();
 
+  // Stores
+  const appStore = useAppStore();
+
   // Mutations
   const loginMutation = useMutation({
     mutationFn: LoginAPI,
-    onSuccess: (data) => {
+    onSuccess: (data: APISuccessResponse) => {
       if (data.ok) router.push("/dashboard");
     },
-    onError: (error) => {},
+    onError: (error: APIErrorReseponse) => {
+      appStore.addToast({
+        msg: error.msg,
+        code: error.code,
+        iconType: error.status == 500 ? ToastIcon.ERROR : ToastIcon.WARNING,
+      });
+    },
   });
-
 
   const forgotPasswordMutation = useMutation({
     mutationFn: ForgotPasswordAPI,
-    onSuccess: (data) => {console.log(data)},
-    onError: (error) => {},
+    onSuccess: (data) => {
+      if(data.ok) appStore.addToast({
+        msg: data.msg,
+        code: 'Successfull',
+        iconType: ToastIcon.SUCCESS
+      })
+    },
+    onError: (error: APIErrorReseponse) => {
+      appStore.addToast({
+        msg: error.msg,
+        code: error.code,
+        iconType: error.status == 500 ? ToastIcon.ERROR : ToastIcon.WARNING,
+      });
+    },
   });
 
   const handleLogin = () => {
@@ -46,7 +71,7 @@ const Login = () => {
   const handleForgotPassword = () => {
     if (!loginForm.email) return;
 
-    forgotPasswordMutation.mutate({email: loginForm.email});
+    forgotPasswordMutation.mutate({ email: loginForm.email });
   };
 
   return (
@@ -103,10 +128,12 @@ const Login = () => {
             )}
 
             {isForgotPassword && (
-              <div className="flex flex-col gap-4 w-full items-center justify-center" onKeyDown={(e) => {
-                if(e.key == "Enter")
-                  handleForgotPassword()
-              }}>
+              <div
+                className="flex flex-col gap-4 w-full items-center justify-center"
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") handleForgotPassword();
+                }}
+              >
                 <Input
                   variant={InputVariant.PRIMARY}
                   placeholder="Email"

@@ -5,9 +5,14 @@ import { useState, useEffect } from "react";
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
+import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
+
+// Stores
+import { useAppStore } from "../stores/app.store";
 
 // API
 import { SignUpAPI } from "../api/auth.api";
+import { ToastIcon } from "../config/types.config";
 
 interface SignUpForm {
   name: string;
@@ -16,9 +21,18 @@ interface SignUpForm {
 }
 
 interface SignUpFormChecks {
-  name: boolean;
-  email: boolean;
-  password: boolean;
+  name: {
+    ok: boolean;
+    msg: string;
+  };
+  email: {
+    ok: boolean;
+    msg: string;
+  };
+  password: {
+    ok: boolean;
+    msg: string;
+  };
 }
 
 const SignUp = () => {
@@ -29,38 +43,73 @@ const SignUp = () => {
     password: "",
   });
   const [signUpFormChecks, setSignUpFormChecks] = useState<SignUpFormChecks>({
-    name: false,
-    email: false,
-    password: false,
+    name: { ok: false, msg: "Name is required." },
+    email: { ok: false, msg: "Email shoule be valid." },
+    password: {
+      ok: false,
+      msg: "Password should be 8 character long, has a uppercase letter, a lowercase letter, a digi and special character.",
+    },
   });
+
+  // Stores
+  const appStore = useAppStore();
 
   // Mutations
   const signUpMutation = useMutation({
     mutationFn: SignUpAPI,
-    onSuccess: (data) => {},
-    onError: (error) => {},
+    onSuccess: (data: APISuccessResponse) => {},
+    onError: (error: APIErrorReseponse) => {
+      appStore.addToast({
+        msg: error.msg,
+        code: error.code,
+        iconType: error.status == 500 ? ToastIcon.ERROR : ToastIcon.WARNING,
+      });
+    },
   });
 
   const handleSignUp = () => {
-    if (Object.values(signUpFormChecks).every(value => value === true))return;
-
-    signUpMutation.mutate(signUpForm);
+    if (!Object.values(signUpFormChecks).every((value) => value.ok === true)) {
+      const invalidValueKeys = Object.keys(signUpFormChecks);
+      invalidValueKeys.map((key) => {
+        if (signUpFormChecks[key as keyof SignUpFormChecks].ok == false) {
+          appStore.addToast({
+            msg: signUpFormChecks[key as keyof SignUpFormChecks].msg ?? "",
+            code: "VALIDATION ERROR",
+            iconType: ToastIcon.WARNING,
+          });
+        }
+      });
+    } else {
+      signUpMutation.mutate(signUpForm);
+    }
   };
-  
+
   const handleSignUpValidation = () => {
     setSignUpFormChecks({
       ...signUpFormChecks,
-      name: signUpForm.name.length > 0,
-      email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signUpForm.email),
-      password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(signUpForm.password)
-    })
+      name: {
+        ok: signUpForm.name.length > 0,
+        msg: signUpFormChecks.name.msg
+      },
+      email: {
+        ok: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          signUpForm.email,
+        ),
+        msg: signUpFormChecks.email.msg
+      },
+      password: {
+        ok: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+          signUpForm.password,
+        ),
+        msg: signUpFormChecks.password.msg
+      },
+    });
   };
 
   useEffect(() => {
-    handleSignUpValidation()
-    return () => {}
-  }, [signUpForm])
-  
+    handleSignUpValidation();
+    return () => {};
+  }, [signUpForm]);
 
   return (
     <main className="w-screen h-screen flex items-center justify-center select-none">
@@ -79,6 +128,7 @@ const SignUp = () => {
             <Input
               variant={InputVariant.PRIMARY}
               placeholder="Name"
+              value={signUpForm.name}
               onChange={(e) => {
                 setSignUpForm({ ...signUpForm, name: e.target.value });
               }}
@@ -86,6 +136,7 @@ const SignUp = () => {
             <Input
               variant={InputVariant.PRIMARY}
               placeholder="Email"
+              value={signUpForm.email}
               onChange={(e) =>
                 setSignUpForm({ ...signUpForm, email: e.target.value })
               }
@@ -94,6 +145,7 @@ const SignUp = () => {
               variant={InputVariant.PRIMARY}
               placeholder="Password"
               type="password"
+              value={signUpForm.password}
               onChange={(e) =>
                 setSignUpForm({ ...signUpForm, password: e.target.value })
               }
