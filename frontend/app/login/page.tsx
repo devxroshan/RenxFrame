@@ -33,7 +33,7 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationFn: LoginAPI,
     onSuccess: (data: APISuccessResponse) => {
-      if (data.ok) router.push("/dashboard");
+      if (data.ok) router.replace(process.env.NEXT_PUBLIC_LOGGED_IN_PAGE as string)
     },
     onError: (error: APIErrorReseponse) => {
       appStore.addToast({
