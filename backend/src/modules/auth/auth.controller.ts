@@ -80,7 +80,7 @@ export class AuthController {
     });
 
     return res.redirect(
-      this.configService.get('LOGGED_IN_FRONTEND_URL') as string,
+      this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string,
     );
   }
 
