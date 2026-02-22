@@ -93,9 +93,4 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto){
     return await this.authService.resetPassword(resetPasswordDto);
   }
-  
-  @Get('is-logged-in')
-  async isLoggedIn(@Query('token') token:string){
-    return await this.authService.isLoggedIn(token)
-  }
 }
