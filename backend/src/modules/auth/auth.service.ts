@@ -144,7 +144,11 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       { email: user.email },
-      { secret: this.configService.get<string>('JWT_SECRET') },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '28d',
+        algorithm: 'HS512',
+      },
     );
 
     return accessToken;
@@ -262,7 +266,11 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       { email: user.email },
-      { secret: this.configService.get<string>('JWT_SECRET') },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '28d',
+        algorithm: 'HS512',
+      },
     );
 
     return accessToken;
@@ -271,7 +279,11 @@ export class AuthService {
   async forgotPassword(email: string) {
     const resetPasswordToken = this.jwtService.sign(
       { email },
-      { secret: this.configService.get<string>('JWT_SECRET') as string, expiresIn: '5m', algorithm: 'HS512' },
+      {
+        secret: this.configService.get<string>('JWT_SECRET') as string,
+        expiresIn: '5m',
+        algorithm: 'HS512',
+      },
     );
 
     const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
@@ -279,7 +291,7 @@ export class AuthService {
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
-      }
+      },
     });
 
     if (!user) {
@@ -322,8 +334,8 @@ export class AuthService {
       const decodedToken = await this.jwtService.verify(
         resetPasswordDto.token,
         {
-          secret: this.configService.get<string>('JWT_SECRET') as string
-        }
+          secret: this.configService.get<string>('JWT_SECRET') as string,
+        },
       );
 
       await this.prismaService.user.update({

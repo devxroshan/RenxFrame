@@ -2,21 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { InternalServerErrorException, BadRequestException,NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService
   ) {}
 
   async isLoggedIn(token: string) {
     let decodedToken: { email: string };
 
+    console.log(token)
     try {
-      decodedToken = (await this.jwtService.verifyAsync(token)) as {
+      decodedToken = await this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_SECRET') as string
+      }) as {
         email: string;
       };
+
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new BadRequestException({
