@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './common/database/prisma.module';
 import { CommonModule } from './common/common.module';
 import { AccountModule } from './modules/account/account.module';
+import { UserModule } from './modules/user/user.module';
 
 
 @Module({
@@ -15,6 +16,7 @@ import { AccountModule } from './modules/account/account.module';
     }),
     AuthModule,
     AccountModule,
+    UserModule,
     PrismaModule,
     CommonModule,
   ],
