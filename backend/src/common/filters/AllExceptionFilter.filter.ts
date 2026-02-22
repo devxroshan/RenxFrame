@@ -1,41 +1,63 @@
-import { ArgumentsHost, Catch, HttpException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response, Request } from 'express';
 
 @Catch()
-export class AllExceptionFilter {
-    constructor(private readonly configService: ConfigService) {}
+export class AllExceptionFilter implements ExceptionFilter {
+  constructor(private readonly configService: ConfigService) {}
 
-    catch(exception: HttpException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        const request = ctx.getRequest();
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
-        const errorResponse = exception.getResponse();
-        const status = exception.getStatus();
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let error: any = {
+      name: 'InternalServerError',
+      msg: 'Something went wrong. Try again later.',
+      code: 'INTERNAL_SERVER_ERROR',
+      details: {},
+    };
 
-        const error = errorResponse as {
-            name?: string;
-            msg?: string;
-            code?: string;
-            details?: any;
-        }
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const errorResponse = exception.getResponse();
 
-        if (error.code == 'INTERNAL_SERVER_ERROR' && this.configService.get('NODE_ENV') !== 'production') {
-            response.status(status).json({
-                ...error,
-                timestamp: new Date().toISOString(),
-                path: request.url,
-            });
-        } else {
-            response.status(status).json({
-                ok: false,
-                name: error.name || 'InternalServerError',
-                code: error.code || 'INTERNAL_SERVER_ERROR',
-                msg: error.msg || 'Something went wrong. Try again later.',
-                timestamp: new Date().toISOString(),
-                path: request.url,
-                details: error.details || {},
-            });
-        }
+      if (typeof errorResponse === 'string') {
+        error.msg = errorResponse;
+      } else {
+        error = { ...error, ...errorResponse };
+      }
+    } else {
+      console.error('Unexpected Error:', exception);
     }
+
+    if (
+      error.code === 'INTERNAL_SERVER_ERROR' &&
+      this.configService.get('NODE_ENV') !== 'production'
+    ) {
+      response.status(status).json({
+        ...error,
+        raw: exception, // only visible in dev
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
+    } else {
+      response.status(status).json({
+        ok: false,
+        name: error.name,
+        code: error.code,
+        msg: error.msg,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        details: error.details ?? {},
+      });
+    }
+  }
 }
