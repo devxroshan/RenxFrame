@@ -35,6 +35,10 @@ export class AllExceptionFilter implements ExceptionFilter {
         error = { ...error, ...errorResponse };
       }
     } else {
+      if(this.configService.get<string>('NODE_ENV') === 'production'){
+        response.status(500).redirect(this.configService.get<string>('FRONTEND_INTERNAL_SERVER_ERROR_PAGE') as string)
+        return;
+      }
       console.error('Unexpected Error:', exception);
     }
 
