@@ -6,6 +6,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
+
+// Wrappers
+import NonProtectedRoute from "../Wrappers/NonProtectedRoute";
+
+// API
 import { ResetPasswordAPI } from "../api/auth.api";
 
 // Stores
@@ -108,7 +113,7 @@ const ResetPassword = () => {
   })
 
   return (
-    <>
+    <NonProtectedRoute>
       <main className="w-screen h-screen flex items-center justify-center select-none">
         <div className="px-3 py-2 bg-secondary-bg border border-primary-border w-[25vw] flex flex-col gap-4 items-start justify-center h-fit rounded-xl">
           <span className="font-semibold text-xl">Reset Password</span>
@@ -230,7 +235,7 @@ const ResetPassword = () => {
           </div>
         </div>
       </main>
-    </>
+    </NonProtectedRoute>
   );
 };
 

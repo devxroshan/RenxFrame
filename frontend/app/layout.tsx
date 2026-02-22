@@ -3,7 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 
 // Wrappers
-import QueryClientProviderWrapper from "./Wrappers/QueryClientProviderWrapper";
+import QueryClientProviders from "./Wrappers/QueryClientProviders";
+import IsAuthenticated from "./Wrappers/IsAuthenticated";
 
 // Components
 import ToastContainer from "./components/ToastContainer";
@@ -27,12 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <QueryClientProviderWrapper>
-        <body className={`${poppins.variable} antialiased`}>
-          {children}
-          <ToastContainer/>
-        </body>
-      </QueryClientProviderWrapper>
+      <QueryClientProviders>
+        <IsAuthenticated>
+          <body className={`${poppins.variable} antialiased`}>
+            {children}
+            <ToastContainer />
+          </body>
+        </IsAuthenticated>
+      </QueryClientProviders>
     </html>
   );
 }

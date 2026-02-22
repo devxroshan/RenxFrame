@@ -5,13 +5,17 @@ import { useState, useEffect } from "react";
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
-import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
+
+// Wrappres
+import NonProtectedRoute from "../Wrappers/NonProtectedRoute";
 
 // Stores
 import { useAppStore } from "../stores/app.store";
 
 // API
 import { SignUpAPI } from "../api/auth.api";
+import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
+
 import { ToastIcon } from "../config/types.config";
 
 interface SignUpForm {
@@ -89,19 +93,19 @@ const SignUp = () => {
       ...signUpFormChecks,
       name: {
         ok: signUpForm.name.length > 0,
-        msg: signUpFormChecks.name.msg
+        msg: signUpFormChecks.name.msg,
       },
       email: {
         ok: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
           signUpForm.email,
         ),
-        msg: signUpFormChecks.email.msg
+        msg: signUpFormChecks.email.msg,
       },
       password: {
         ok: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
           signUpForm.password,
         ),
-        msg: signUpFormChecks.password.msg
+        msg: signUpFormChecks.password.msg,
       },
     });
   };
@@ -112,85 +116,87 @@ const SignUp = () => {
   }, [signUpForm]);
 
   return (
-    <main className="w-screen h-screen flex items-center justify-center select-none">
-      <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] h-[70vh] rounded-xl border border-primary-border">
-        <div className="w-full h-full bg-white rounded-lg"></div>
+    <NonProtectedRoute>
+      <main className="w-screen h-screen flex items-center justify-center select-none">
+        <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] h-[70vh] rounded-xl border border-primary-border">
+          <div className="w-full h-full bg-white rounded-lg"></div>
 
-        <div
-          className="w-[60%] h-full flex flex-col items-start justify-start gap-4"
-          onKeyDown={(e) => {
-            if (e.key == "Enter") handleSignUp();
-          }}
-        >
-          <span className="text-xl font-semibold">Sign Up</span>
+          <div
+            className="w-[60%] h-full flex flex-col items-start justify-start gap-4"
+            onKeyDown={(e) => {
+              if (e.key == "Enter") handleSignUp();
+            }}
+          >
+            <span className="text-xl font-semibold">Sign Up</span>
 
-          <div className="flex flex-col gap-2 items-center justify-center w-full">
-            <Input
-              variant={InputVariant.PRIMARY}
-              placeholder="Name"
-              value={signUpForm.name}
-              onChange={(e) => {
-                setSignUpForm({ ...signUpForm, name: e.target.value });
-              }}
-            />
-            <Input
-              variant={InputVariant.PRIMARY}
-              placeholder="Email"
-              value={signUpForm.email}
-              onChange={(e) =>
-                setSignUpForm({ ...signUpForm, email: e.target.value })
-              }
-            />
-            <Input
-              variant={InputVariant.PRIMARY}
-              placeholder="Password"
-              type="password"
-              value={signUpForm.password}
-              onChange={(e) =>
-                setSignUpForm({ ...signUpForm, password: e.target.value })
-              }
-            />
-          </div>
+            <div className="flex flex-col gap-2 items-center justify-center w-full">
+              <Input
+                variant={InputVariant.PRIMARY}
+                placeholder="Name"
+                value={signUpForm.name}
+                onChange={(e) => {
+                  setSignUpForm({ ...signUpForm, name: e.target.value });
+                }}
+              />
+              <Input
+                variant={InputVariant.PRIMARY}
+                placeholder="Email"
+                value={signUpForm.email}
+                onChange={(e) =>
+                  setSignUpForm({ ...signUpForm, email: e.target.value })
+                }
+              />
+              <Input
+                variant={InputVariant.PRIMARY}
+                placeholder="Password"
+                type="password"
+                value={signUpForm.password}
+                onChange={(e) =>
+                  setSignUpForm({ ...signUpForm, password: e.target.value })
+                }
+              />
+            </div>
 
-          <Button
-            variant={ButtonVariant.PRIMARY}
-            text="Sign Up"
-            onLoadingText="Signing Up...."
-            onClick={handleSignUp}
-            isLoading={signUpMutation.isPending}
-          />
-
-          <div className="flex w-full items-center justify-center my-6">
-            <div className="w-full h-px bg-primary-border"></div>
-            <span className="mx-2 text-primary-text">OR</span>
-            <div className="w-full h-px bg-primary-border"></div>
-          </div>
-
-          <div className="flex flex-col gap-4 w-full items-center justify-center">
             <Button
-              variant={ButtonVariant.SECONDARY_OUTLINE}
-              text="Sign Up with Google"
-              onClick={() => {
-                if (window)
-                  window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
-              }}
+              variant={ButtonVariant.PRIMARY}
+              text="Sign Up"
+              onLoadingText="Signing Up...."
+              onClick={handleSignUp}
+              isLoading={signUpMutation.isPending}
             />
 
-            <div>
-              <span className="text-sm font-semibold">
-                Already have an account?{" "}
-              </span>
-              <Link
-                href="/login"
-                className="text-sm text-primary-blue font-medium hover:underline"
-              >
-                Login
-              </Link>
+            <div className="flex w-full items-center justify-center my-6">
+              <div className="w-full h-px bg-primary-border"></div>
+              <span className="mx-2 text-primary-text">OR</span>
+              <div className="w-full h-px bg-primary-border"></div>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full items-center justify-center">
+              <Button
+                variant={ButtonVariant.SECONDARY_OUTLINE}
+                text="Sign Up with Google"
+                onClick={() => {
+                  if (window)
+                    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
+                }}
+              />
+
+              <div>
+                <span className="text-sm font-semibold">
+                  Already have an account?{" "}
+                </span>
+                <Link
+                  href="/login"
+                  className="text-sm text-primary-blue font-medium hover:underline"
+                >
+                  Login
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </NonProtectedRoute>
   );
 };
 

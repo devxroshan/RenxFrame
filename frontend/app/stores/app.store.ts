@@ -11,18 +11,21 @@ interface Toast {
 }
 
 type States = {
-    toasts: Toast[]
+    toasts: Toast[],
+    isAuth: boolean;
 }
 
 type Actions = {
     addToast: (toast: Omit<Toast, 'id'>) => void;
     removeToast: (id:string) => void;
-    clearAllToast: () => void
+    clearAllToast: () => void;
+    setIsAuth: (isAuth: boolean) => void;
 }
 
 
 export const useAppStore = create<States & Actions>((set) => ({
     toasts: [],
+    isAuth: false,
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,
@@ -34,5 +37,8 @@ export const useAppStore = create<States & Actions>((set) => ({
     })),
     clearAllToast: () => set((state) => ({
         toasts: []
+    })),
+    setIsAuth: (isAuth: boolean) => set((state) => ({
+        isAuth
     }))
 }))

@@ -1,9 +1,11 @@
+import ProtectedRoute from "../Wrappers/ProtectedRoute";
+
 const App = () => {
   return (
-    <div>
-        AUTHENTICATED APP
-    </div>
-  )
-}
+    <ProtectedRoute>
+      <div>AUTHENTICATED APP</div>
+    </ProtectedRoute>
+  );
+};
 
-export default App
+export default App;

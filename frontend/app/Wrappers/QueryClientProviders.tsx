@@ -2,7 +2,7 @@
 import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-const QueryClientProviderWrapper = ({ children }: { children: React.ReactNode }) => {
+const QueryClientProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={new QueryClient()}>
       {children}
@@ -10,4 +10,4 @@ const QueryClientProviderWrapper = ({ children }: { children: React.ReactNode })
   )
 }
 
-export default QueryClientProviderWrapper
+export default QueryClientProviders

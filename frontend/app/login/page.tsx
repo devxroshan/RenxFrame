@@ -7,6 +7,9 @@ import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { useMutation } from "@tanstack/react-query";
 
+// Wrappers
+import NonProtectedRoute from "../Wrappers/NonProtectedRoute";
+
 // Stores
 import { useAppStore } from "../stores/app.store";
 
@@ -75,7 +78,7 @@ const Login = () => {
   };
 
   return (
-    <>
+    <NonProtectedRoute>
       <main className="w-screen h-screen flex items-center justify-center select-none">
         <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] h-[70vh] rounded-xl border border-primary-border">
           <div className="w-full h-full bg-white rounded-lg"></div>
@@ -190,7 +193,7 @@ const Login = () => {
           </div>
         </div>
       </main>
-    </>
+    </NonProtectedRoute>
   );
 };
 
