@@ -14,8 +14,6 @@ export class UserService {
 
   async isLoggedIn(token: string) {
     let decodedToken: { email: string };
-
-    console.log(token)
     try {
       decodedToken = await this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_SECRET') as string
