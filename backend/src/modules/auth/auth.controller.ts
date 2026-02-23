@@ -34,9 +34,9 @@ export class AuthController {
     return result;
   }
 
-  @Get('login')
+  @Post('login')
   async login(
-    @Query() loginDto: AuthLoginDto,
+    @Body() loginDto: AuthLoginDto,
     @Res({ passthrough: true }) res: express.Response,
   ) {
     const accessToken = await this.authService.loginUser(loginDto);
@@ -44,6 +44,8 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      domain: '.localhost',
+      path: '/',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
     return {
@@ -73,8 +75,9 @@ export class AuthController {
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.configService.get('NODE_ENV') as string == 'production', // 🔥 true in production (https only)
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
+      domain: '.localhost',
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 28,
     });

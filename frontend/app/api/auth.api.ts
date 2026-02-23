@@ -10,7 +10,10 @@ export const SignUpAPI = async ({name, email, password}:{name:string, email:stri
 }
 
 export const LoginAPI = async ({email, password}:{email:string, password:string}) => {
-    const response = await api.get(`/auth/login?email=${email}&password=${password}`)
+    const response = await api.post(`/auth/login`, {
+        email,
+        password
+    })
     return response.data;
 }
 
