@@ -42,9 +42,9 @@ export class AuthController {
     const accessToken = await this.authService.loginUser(loginDto);
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      domain: '.localhost',
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      domain: '.renxframe.local',
       path: '/',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
@@ -75,16 +75,14 @@ export class AuthController {
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      domain: '.localhost',
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      domain: '.renxframe.local',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 28,
+      maxAge: 28 * 24 * 60 * 60 * 1000,
     });
-
-    return res.redirect(
-      this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string,
-    );
+    
+    return res.redirect(this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string)
   }
 
   @Get('forgot-password')
