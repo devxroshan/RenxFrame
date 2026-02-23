@@ -72,17 +72,7 @@ export class AuthController {
     const accessToken = await this.authService.googleLogin(
       req.user as { email: string; name: string; profilePicUrl: string },
     );
-
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.renxframe.local',
-      path: '/',
-      maxAge: 28 * 24 * 60 * 60 * 1000,
-    });
-    
-    return res.redirect(this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string)
+    return {};
   }
 
   @Get('forgot-password')
