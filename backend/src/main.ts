@@ -12,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: [`${process.env.FRONTEND_URL}`, 'http://app.renxframe.local:3000',],
+    origin: [`${process.env.FRONTEND_URL}`, 'http://app.renxframe.test:3000',],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
