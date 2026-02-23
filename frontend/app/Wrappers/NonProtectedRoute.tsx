@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Stores
@@ -12,10 +13,14 @@ const NonProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     // Stores
     const appStore = useAppStore()
 
-    if(appStore && appStore.isAuth){
+
+    useEffect(() => {
+      if(appStore.isAuth && appStore.isAuthChecked){
         router.replace(process.env.NEXT_PUBLIC_LOGGED_IN_PAGE as string)
-        return;
-    }
+      }
+      return () => {}
+    }, [appStore.isAuth, appStore.isAuthChecked, router])
+    
 
   return <>{children}</>;
 };

@@ -1,6 +1,7 @@
 'use client';
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 // Stores
 import { useAppStore } from "../stores/app.store";
@@ -12,10 +13,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     // Stores
     const appStore = useAppStore()
 
-    if(appStore && !appStore.isAuth){
+
+    useEffect(() => {
+      if(!appStore.isAuth && appStore.isAuthChecked){
         router.replace(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`)
-        return;
-    }
+      }
+      return () => {}
+    }, [router, appStore.isAuth, appStore.isAuthChecked])
+    
 
   return <>{children}</>;
 };
