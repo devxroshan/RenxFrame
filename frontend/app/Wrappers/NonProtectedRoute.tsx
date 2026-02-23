@@ -13,7 +13,7 @@ const NonProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const appStore = useAppStore()
 
     if(appStore && appStore.isAuth){
-        router.replace(process.env.NEXT_PUBLIC_LOGGED_IN_ROUTE as string)
+        router.replace(process.env.NEXT_PUBLIC_LOGGED_IN_PAGE as string)
         return;
     }
 
