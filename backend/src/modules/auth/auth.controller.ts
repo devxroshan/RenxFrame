@@ -44,7 +44,7 @@ export class AuthController {
       httpOnly: true,
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'lax',
-      domain: '.renxframe.local',
+      domain: `.${this.configService.get<string>('HOST')}`,
       path: '/',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
@@ -72,16 +72,31 @@ export class AuthController {
     const accessToken = await this.authService.googleLogin(
       req.user as { email: string; name: string; profilePicUrl: string },
     );
-    return {};
+
+    if (this.configService.get<string>('NODE_ENV') !== 'production') {
+      res.redirect(`${this.configService.get<string>('FRONTEND_URL')}?access_token=${accessToken}`)
+      return;
+    }
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      domain: `.${this.configService.get<string>('HOST')}`,
+      path: '/',
+      maxAge: 28 * 24 * 60 * 60 * 1000,
+    });
+    return res.redirect(
+      this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string
+    )
   }
 
   @Get('forgot-password')
-  async forgotPassword(@Query('email') email: string){
+  async forgotPassword(@Query('email') email: string) {
     return await this.authService.forgotPassword(email);
   }
 
   @Put('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto){
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
   }
 }
