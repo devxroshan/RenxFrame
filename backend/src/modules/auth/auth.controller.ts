@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
 import { AuthCreateDto } from './dto/auth-create.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import * as express from 'express';
-import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
@@ -37,7 +37,7 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginDto: AuthLoginDto,
-    @Res({ passthrough: true }) res: express.Response,
+    @Res() res: express.Response,
   ) {
     const accessToken = await this.authService.loginUser(loginDto);
     res.cookie('access_token', accessToken, {
@@ -67,7 +67,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(
     @Req() req: express.Request,
-    @Res({ passthrough: true }) res: express.Response,
+    @Res() res: express.Response,
   ) {
     const accessToken = await this.authService.googleLogin(
       req.user as { email: string; name: string; profilePicUrl: string },
@@ -90,8 +90,8 @@ export class AuthController {
     )
   }
 
-  @Get('forgot-password')
-  async forgotPassword(@Query('email') email: string) {
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
     return await this.authService.forgotPassword(email);
   }
 

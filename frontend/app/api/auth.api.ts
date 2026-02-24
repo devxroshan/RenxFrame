@@ -18,7 +18,9 @@ export const LoginAPI = async ({email, password}:{email:string, password:string}
 }
 
 export const ForgotPasswordAPI = async ({email}:{email:string}) => {
-    const response = await api.get(`/auth/forgot-password?email=${email}`)
+    const response = await api.post(`/auth/forgot-password`, {
+        email
+    })
     return response.data;
 }
 
