@@ -1,4 +1,6 @@
 import {create} from 'zustand'
+import { v4 as uuidv4 } from "uuid";
+
 
 import { ToastIcon } from '../config/types.config';
 
@@ -32,7 +34,7 @@ export const useAppStore = create<States & Actions>((set) => ({
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,
-            id: crypto.randomUUID()
+            id: uuidv4()
         }]
     })),
     removeToast: (id: string) => set((state) => ({

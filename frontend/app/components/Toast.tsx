@@ -1,5 +1,6 @@
 "use client";
 import { CheckCircle, XCircle, AlertTriangle, X } from "lucide-react";
+import { useState } from "react";
 
 // Stores
 import { useAppStore } from "../stores/app.store";
@@ -21,16 +22,24 @@ const toastIcons = {
 
 
 const Toast = ({id, msg, code, iconType }: ToastProps) => {
+  const [closeToast, setCloseToast] = useState<boolean>(false);
+
   // Stores
   const appStore = useAppStore();
 
   return (
-    <div className="w-full h-fit bg-secondary-bg border border-primary-border rounded-lg flex items-center justify-start px-2 py-2 gap-2 select-none">
+    <div className={`w-full h-fit bg-secondary-bg border border-primary-border rounded-lg flex items-center justify-start px-2 py-2 gap-2 select-none ${closeToast?'animate-toast-out':'animate-toast-in'}`}>
       {toastIcons[iconType]}
       <div className="flex flex-col w-full h-fit items-start justify-center gap-1">
         <div className="flex justify-between w-full">
           <span className="font-semibold text-lg">{code}</span>
-          <X className="w-4 h-4 text-gray-500 cursor-pointer" onClick={() => appStore.removeToast(id)}/>
+          <X className="w-4 h-4 text-gray-500 cursor-pointer" onClick={() => {
+            setCloseToast(true)
+
+            setTimeout(() => {
+              appStore.removeToast(id)
+            }, 260)
+          }}/>
         </div>
         <span className="font-medium text-primary-text w-full text-wrap">
           {msg}
