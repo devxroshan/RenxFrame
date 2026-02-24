@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
 // Wrappers
@@ -9,8 +9,8 @@ import IsAuthenticated from "./Wrappers/IsAuthenticated";
 // Components
 import ToastContainer from "./components/ToastContainer";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal"],
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <QueryClientProviders>
         <IsAuthenticated>
-          <body className={`${poppins.variable} antialiased`}>
+          <body className={`${inter.className} antialiased select-none`}>
             {children}
             <ToastContainer />
           </body>
