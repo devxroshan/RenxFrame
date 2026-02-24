@@ -14,11 +14,12 @@ import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/common/services/email.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly configService: ConfigService,
+    private readonly appConfig: AppConfigService,
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
@@ -41,12 +42,12 @@ export class AuthService {
       const verificationToken = this.jwtService.sign(
         { email: user.email },
         {
-          secret: this.configService.get<string>('JWT_SECRET'),
+          secret: this.appConfig.JwtSecret,
           expiresIn: '2m',
         },
       );
 
-      const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
+      const verificationLink = `${this.appConfig.BackendUrl}/auth/verify-email?token=${verificationToken}`;
 
       await this.emailService.sendVerificationEmail(
         user.name,
@@ -77,7 +78,7 @@ export class AuthService {
         msg: 'Failed to create user',
         code: 'FAILED_TO_CREATE_USER',
         details:
-          this.configService.get('NODE_ENV') === 'development' ? { error } : {},
+          this.appConfig.isProduction == false ? { error } : {},
       });
     }
   }
@@ -109,11 +110,11 @@ export class AuthService {
       const verificationToken = this.jwtService.sign(
         { email: user.email },
         {
-          secret: this.configService.get<string>('JWT_SECRET'),
+          secret: this.appConfig.JwtSecret,
           expiresIn: '2m',
         },
       );
-      const verificationLink = `${this.configService.get<string>('BACKEND_URL')}/auth/verify-email?token=${verificationToken}`;
+      const verificationLink = `${this.appConfig.BackendUrl}/auth/verify-email?token=${verificationToken}`;
 
       await this.emailService.sendVerificationEmail(
         user.name,
@@ -145,7 +146,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { email: user.email },
       {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.appConfig.JwtSecret,
         expiresIn: '28d',
         algorithm: 'HS512',
       },
@@ -157,7 +158,7 @@ export class AuthService {
   async verifyEmail(token: string) {
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.appConfig.JwtSecret,
       });
 
       await this.prismaService.user.update({
@@ -267,7 +268,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { email: user.email },
       {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.appConfig.JwtSecret,
         expiresIn: '28d',
         algorithm: 'HS512',
       },
@@ -280,13 +281,13 @@ export class AuthService {
     const resetPasswordToken = this.jwtService.sign(
       { email },
       {
-        secret: this.configService.get<string>('JWT_SECRET') as string,
+        secret: this.appConfig.JwtSecret,
         expiresIn: '5m',
         algorithm: 'HS512',
       },
     );
 
-    const resetPasswordLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetPasswordToken}`;
+    const resetPasswordLink = `${this.appConfig.FrontendUrl}/reset-password?token=${resetPasswordToken}`;
 
     const user = await this.prismaService.user.findUnique({
       where: {
@@ -308,7 +309,7 @@ export class AuthService {
         user.name,
         resetPasswordLink,
         '5 minutes',
-        this.configService.get('SUPPORT_EMAIL') as string,
+        this.appConfig.SupportEmail,
       );
       return {
         ok: true,
@@ -334,7 +335,7 @@ export class AuthService {
       const decodedToken = await this.jwtService.verify(
         resetPasswordDto.token,
         {
-          secret: this.configService.get<string>('JWT_SECRET') as string,
+          secret: this.appConfig.JwtSecret,
         },
       );
 

@@ -18,12 +18,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService,
+    private readonly appConfig:AppConfigService,
   ) {}
 
   @Post('signup')
@@ -44,9 +45,9 @@ export class AuthController {
     const accessToken = await this.authService.loginUser(loginDto);
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      secure: this.appConfig.isProduction,
       sameSite: 'lax',
-      domain: `.${this.configService.get<string>('HOST')}`,
+      domain: `.${this.appConfig.Host}`,
       path: '/',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
@@ -75,20 +76,20 @@ export class AuthController {
       req.user as { email: string; name: string; profilePicUrl: string },
     );
 
-    if (this.configService.get<string>('NODE_ENV') !== 'production') {
-      res.redirect(`${this.configService.get<string>('FRONTEND_URL')}?access_token=${accessToken}`)
+    if (!this.appConfig.isProduction) {
+      res.redirect(`${this.appConfig.FrontendUrl}?access_token=${accessToken}`)
       return;
     }
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      secure: this.appConfig.isProduction,
       sameSite: 'lax',
-      domain: `.${this.configService.get<string>('HOST')}`,
+      domain: `.${this.appConfig.Host}`,
       path: '/',
       maxAge: 28 * 24 * 60 * 60 * 1000,
     });
     return res.redirect(
-      this.configService.get<string>('LOGGED_IN_FRONTEND_URL') as string
+      this.appConfig.LoggedInFrontendUrl
     )
   }
 

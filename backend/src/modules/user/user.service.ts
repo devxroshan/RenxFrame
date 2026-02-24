@@ -3,20 +3,21 @@ import { PrismaService } from 'src/common/database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { InternalServerErrorException, BadRequestException,NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly appConfig: AppConfigService
   ) {}
 
   async isLoggedIn(token: string) {
     let decodedToken: { email: string };
     try {
       decodedToken = await this.jwtService.verify(token, {
-        secret: this.configService.get<string>('JWT_SECRET') as string
+        secret: this.appConfig.JwtSecret
       }) as {
         email: string;
       };
