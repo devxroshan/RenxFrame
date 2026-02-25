@@ -41,8 +41,6 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
 
-  app.useGlobalFilters(new AllExceptionFilter(app.get(ConfigService)));
-
   await app.listen(app.get(ConfigService).get('PORT') ?? 8000);
 }
 bootstrap();

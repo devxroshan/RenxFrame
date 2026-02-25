@@ -6,6 +6,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { JwtExceptionFilter } from './filters/JwtExceptionFilter.filter';
+import { DBExceptionFilter } from './filters/DBExceptionFilter.filter';
+import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
 
 @Module({
   imports: [
@@ -19,7 +23,7 @@ import { ConfigService } from '@nestjs/config';
           secure: false,
           auth: {
             user: configService.get<string>('EMAIL_USER'),
-            pass: configService.get<string>('EMAIL_PASS')
+            pass: configService.get<string>('EMAIL_PASS'),
           },
         },
         template: {
@@ -33,7 +37,13 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [],
-  providers: [IsLoggedInGuard, EmailService],
+  providers: [
+    IsLoggedInGuard,
+    EmailService,
+    { provide: APP_FILTER, useClass: JwtExceptionFilter },
+    { provide: APP_FILTER, useClass: DBExceptionFilter },
+    { provide: APP_FILTER, useClass: AllExceptionFilter },
+  ],
   exports: [IsLoggedInGuard, EmailService],
 })
 export class CommonModule {}

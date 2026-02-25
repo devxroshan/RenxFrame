@@ -5,12 +5,12 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Response, Request } from 'express';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly appConfigService: AppConfigService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -35,8 +35,8 @@ export class AllExceptionFilter implements ExceptionFilter {
         error = { ...error, ...errorResponse };
       }
     } else {
-      if(this.configService.get<string>('NODE_ENV') === 'production'){
-        response.status(500).redirect(this.configService.get<string>('FRONTEND_INTERNAL_SERVER_ERROR_PAGE') as string)
+      if(this.appConfigService.isProduction) {
+        response.status(500).redirect(this.appConfigService.FrontendInternalServerErrorPage)
         return;
       }
       console.error('Unexpected Error:', exception);
@@ -44,7 +44,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     if (
       error.code === 'INTERNAL_SERVER_ERROR' &&
-      this.configService.get('NODE_ENV') !== 'production'
+      !this.appConfigService.isProduction
     ) {
       response.status(status).json({
         ...error,

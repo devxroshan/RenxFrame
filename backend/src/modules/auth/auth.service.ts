@@ -1,12 +1,9 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AuthCreateDto } from './dto/auth-create.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { PrismaService } from 'src/common/database/prisma.service';
@@ -61,25 +58,7 @@ export class AuthService {
         msg: 'User created successfully. Please check your email for verification.',
       };
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ConflictException({
-          name: 'ConflictException',
-          msg: 'Email already exists',
-          code: 'EMAIL_ALREADY_EXISTS',
-          details: {
-            field: 'email',
-            value: userDto.email,
-          },
-        });
-      }
-      throw new InternalServerErrorException({
-        ok: false,
-        name: 'InternalServerError',
-        msg: 'Failed to create user',
-        code: 'FAILED_TO_CREATE_USER',
-        details:
-          this.appConfig.isProduction == false ? { error } : {},
-      });
+      throw error;
     }
   }
 
@@ -175,27 +154,7 @@ export class AuthService {
         msg: 'Email verified successfully',
       };
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Verification token has expired. Please request a new verification email.',
-          code: 'TOKEN_EXPIRED',
-        });
-      }
-      if (error.name === 'JsonWebTokenError') {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Invalid verification token. Please request a new verification email.',
-          code: 'INVALID_TOKEN',
-        });
-      }
-      throw new InternalServerErrorException({
-        ok: false,
-        name: 'InternalServerError',
-        msg: 'Failed to verify email',
-        code: 'FAILED_TO_VERIFY_EMAIL',
-        details: error,
-      });
+      throw error;
     }
   }
 
@@ -223,24 +182,7 @@ export class AuthService {
         });
       }
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ConflictException({
-          name: 'ConflictException',
-          msg: 'Email already exists',
-          code: 'EMAIL_ALREADY_EXISTS',
-          details: {
-            field: 'email',
-            value: user.email,
-          },
-        });
-      }
-
-      throw new InternalServerErrorException({
-        ok: false,
-        name: 'InternalServerError',
-        msg: 'Failed to create Google user',
-        code: 'FAILED_TO_CREATE_GOOGLE_USER',
-      });
+      throw error;
     }
 
     if (!existingUser.isGoogleUser) {
@@ -324,8 +266,8 @@ export class AuthService {
     if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
       throw new BadRequestException({
         name: 'BadRequestException',
-        code: 'PASSWORD_IS_NOT_NEW_PASSWORD',
-        msg: 'Password and New Password should be exactly',
+        code: 'PASSWORD_IS_NOT_SAME_AS_NEW_PASSWORD',
+        msg: 'Password and New Password should be exactly same.',
       });
     }
 
@@ -353,34 +295,7 @@ export class AuthService {
         msg: 'Password reset successfully.',
       };
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Reset Password token has expired. Please request a new Reset Password token.',
-          code: 'TOKEN_EXPIRED',
-        });
-      }
-      if (error.name === 'JsonWebTokenError') {
-        throw new BadRequestException({
-          name: 'BadRequestException',
-          msg: 'Invalid Reset Password token. Please request a new Reset Password token.',
-          code: 'INVALID_TOKEN',
-        });
-      }
-
-      if (error.code === 'P2025') {
-        throw new NotFoundException({
-          name: 'NotFoundException',
-          code: 'USER_NOT_FOUND',
-          msg: 'User not found. Password reset failed.',
-        });
-      }
-
-      throw new InternalServerErrorException({
-        name: 'InternaleServerError',
-        code: 'INTERNAL_SERVER_ERROR',
-        msg: 'Something went wrong. Try again later.',
-      });
+      throw error;
     }
   }
 }

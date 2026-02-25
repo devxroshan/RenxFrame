@@ -62,4 +62,19 @@ export class EmailService {
       throw error;
     }
   }
+
+  async sendEmail(email: string, subject: string, template: string, ctx: any) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: subject,
+        template: template,
+        context: {
+          ...ctx
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
