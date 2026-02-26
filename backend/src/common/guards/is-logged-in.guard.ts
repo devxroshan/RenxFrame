@@ -36,6 +36,7 @@ export class IsLoggedInGuard implements CanActivate {
           email: decoded.email,
         },
         select: {
+          id: true,
           name: true,
           email: true,
           isVerified: true,

@@ -70,4 +70,8 @@ export class AppConfigService {
     get FrontendInternalServerErrorPage(): string {
         return this.configService.get<string>('FRONTEND_INTERNAL_SERVER_ERROR_PAGE') as string;
     }
+
+    get MongodbUri(): string {
+        return this.configService.get<string>('MONGODB_URI') as string;
+    }
 }
