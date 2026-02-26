@@ -140,4 +140,25 @@ export class UserService {
       throw error;
     }
   }
+
+  async changeName(name: string, userEmail: string) {
+    try {
+      const updatedUser = await this.prismaService.user.update({
+        where: {
+          email: userEmail,
+        },
+        data: {
+          name
+        },
+      });
+
+      return {
+        ok: true,
+        msg: 'Profile updated successfully.',
+        data: updatedUser,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -103,4 +103,18 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
   }
+
+  async logout(@Res({passthrough: true}) res: express.Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: this.appConfig.isProduction,
+      sameSite: 'lax',
+      domain: `.${this.appConfig.Host}`,
+      path: '/',
+    });
+    return {
+      ok: true,
+      msg: 'Logout Successfully',
+    };
+  }
 }
