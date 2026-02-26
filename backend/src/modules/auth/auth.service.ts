@@ -71,7 +71,6 @@ export class AuthService {
 
     if (!user) {
       throw new BadRequestException({
-        name: 'BadRequestException',
         msg: 'Invalid email or password',
         code: 'INVALID_CREDENTIALS',
       });
@@ -79,7 +78,6 @@ export class AuthService {
 
     if (!user.password) {
       throw new BadRequestException({
-        name: 'BadRequestException',
         msg: "You had Signed Up with Google so you don't have any password right now, Please login with Google or You can just forgot password to reset your password.",
         code: 'GOOGLE_USER',
       });
@@ -103,7 +101,6 @@ export class AuthService {
       );
 
       throw new UnauthorizedException({
-        name: 'UnauthorizedException',
         msg: 'Please verify your email before logging in. Sent you a verification email.',
         code: 'EMAIL_NOT_VERIFIED',
       });
@@ -116,7 +113,6 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new BadRequestException({
-        name: 'BadRequestException',
         msg: 'Invalid email or password',
         code: 'INVALID_CREDENTIALS',
       });
@@ -239,7 +235,6 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException({
-        name: 'NotFoundException',
         code: 'USER_NOT_FOUND',
         msg: 'User not found. Invalid email',
       });
@@ -265,7 +260,6 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
       throw new BadRequestException({
-        name: 'BadRequestException',
         code: 'PASSWORD_IS_NOT_SAME_AS_NEW_PASSWORD',
         msg: 'Password and New Password should be exactly same.',
       });

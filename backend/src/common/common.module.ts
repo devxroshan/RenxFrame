@@ -7,8 +7,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { JwtExceptionFilter } from './filters/JwtExceptionFilter.filter';
-import { DBExceptionFilter } from './filters/DBExceptionFilter.filter';
 import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
 
 @Module({
@@ -40,8 +38,6 @@ import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
   providers: [
     IsLoggedInGuard,
     EmailService,
-    { provide: APP_FILTER, useClass: JwtExceptionFilter },
-    { provide: APP_FILTER, useClass: DBExceptionFilter },
     { provide: APP_FILTER, useClass: AllExceptionFilter },
   ],
   exports: [IsLoggedInGuard, EmailService],

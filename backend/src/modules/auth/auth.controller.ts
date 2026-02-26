@@ -15,10 +15,9 @@ import { AuthCreateDto } from './dto/auth-create.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import * as express from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AppConfigService } from 'src/config/app-config.service';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -37,13 +36,13 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 300 } })
+  @Throttle({default: {limit: 5, ttl: 60}})
   async login(
     @Body() loginDto: AuthLoginDto,
-    @Res() res: express.Response,
+    @Res({passthrough: true}) res: express.Response,
   ) {
     const accessToken = await this.authService.loginUser(loginDto);
-    res.cookie('access_token', accessToken, {
+    res.status(200).cookie('access_token', accessToken, {
       httpOnly: true,
       secure: this.appConfig.isProduction,
       sameSite: 'lax',
@@ -54,6 +53,7 @@ export class AuthController {
     return {
       ok: true,
       msg: 'Login Successfully',
+      accessToken
     };
   }
 
@@ -70,7 +70,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(
     @Req() req: express.Request,
-    @Res() res: express.Response,
+    @Res({passthrough: true}) res: express.Response,
   ) {
     const accessToken = await this.authService.googleLogin(
       req.user as { email: string; name: string; profilePicUrl: string },
@@ -94,7 +94,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @Throttle({ default: { limit: 3, ttl: 300 } })
+  @Throttle({default: {limit: 5, ttl: 60}})
   async forgotPassword(@Body('email') email: string) {
     return await this.authService.forgotPassword(email);
   }

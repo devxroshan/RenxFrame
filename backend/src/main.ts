@@ -4,7 +4,6 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { AllExceptionFilter } from './common/filters/AllExceptionFilter.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +15,7 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
+
 
   app.useGlobalPipes(
     new ValidationPipe({
