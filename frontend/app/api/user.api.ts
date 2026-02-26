@@ -1,6 +1,6 @@
 import api from "../config/api.config"
 
-export const IsLoggedInAPI = async () => {
-    const response = await api.get('/user/is-logged-in')
+export const GetUserInfoAPI = async () => {
+    const response = await api.get('/user/me');
     return response.data;
 }

@@ -13,7 +13,7 @@ export default function Home() {
     if(process.env.NEXT_PUBLIC_NODE_ENV !== 'production' && searchParams.get('access_token')){
       document.cookie = `access_token=${searchParams.get('access_token')};domain=.renxframe.test;path=/`
     }
-  },[])
+  },[searchParams.get('access_token')])
 
 
   return (

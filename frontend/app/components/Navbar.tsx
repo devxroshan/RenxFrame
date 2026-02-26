@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "../stores/app.store";
+import { useUserStore } from "../stores/user.store";
 
 const Navbar = () => {
   const navLinks = [
@@ -98,6 +99,7 @@ const Navbar = () => {
 
   // Stores
   const appStore = useAppStore();
+  const userStore = useUserStore();
 
   useEffect(() => {
     setActivePath(pathname);
@@ -108,11 +110,12 @@ const Navbar = () => {
       {/* Collapsed Sidebar */}
       <section className="w-[7vw] md:w-[6vw] lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
         <Image
-          src={"/pic.jpg"}
+          src={userStore.user?.profilePicUrl || "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"}
           alt="Profile Pic"
           width={40}
           height={40}
           className="border border-primary-border rounded-full cursor-pointer"
+          unoptimized
         />
 
         <div className="flex flex-col gap-0.5">
@@ -145,7 +148,7 @@ const Navbar = () => {
         {/* Profile */}
         <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
           <Image
-            src={"/pic.jpg"}
+            src={userStore.user?.profilePicUrl || "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"}
             alt="Profile Pic"
             width={40}
             height={40}
@@ -153,9 +156,9 @@ const Navbar = () => {
           />
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{"Roshan Kewat"}</span>
+            <span className="text-sm font-medium">{userStore.user?.name || "User"}</span>
             <span className="text-xs text-secondary-text">
-              {"user@example.com"}
+              {userStore.user?.email || "user@example.com"}
             </span>
           </div>
         </div>

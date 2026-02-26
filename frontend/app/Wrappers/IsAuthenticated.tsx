@@ -2,15 +2,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { IsLoggedInAPI } from "../api/user.api";
+import { GetUserInfoAPI } from "../api/user.api";
 import { useAppStore } from "../stores/app.store";
+import { useUserStore } from "../stores/user.store";
 
 const IsAuthenticated = ({ children }: { children: React.ReactNode }) => {
   const { setIsAuth, setIsAuthChecked } = useAppStore();
+  const { setUser } = useUserStore();
 
   const { data, isError, isSuccess } = useQuery({
     queryKey: ["auth-check"],
-    queryFn: IsLoggedInAPI,
+    queryFn: GetUserInfoAPI,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -19,6 +21,7 @@ const IsAuthenticated = ({ children }: { children: React.ReactNode }) => {
     if (isSuccess) {
       setIsAuth(data?.ok === true);
       setIsAuthChecked(true);
+      setUser(data?.data || null);
     }
 
     if (isError) {
