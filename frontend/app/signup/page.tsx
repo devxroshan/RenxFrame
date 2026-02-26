@@ -118,11 +118,11 @@ const SignUp = () => {
   return (
     <NonProtectedRoute>
       <main className="w-screen h-screen flex items-center justify-center select-none">
-        <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] h-[70vh] rounded-xl border border-primary-border">
-          <div className="w-full h-full bg-white rounded-lg"></div>
+        <div className="bg-secondary-bg flex px-3 py-3 gap-4 w-[60vw] md:w-[40vw] lg:w-[60vw] h-[70vh] rounded-xl border border-primary-border">
+          <div className="w-full h-full bg-white rounded-lg hidden lg:flex"></div>
 
           <div
-            className="w-[60%] h-full flex flex-col items-start justify-start gap-4"
+            className="w-full lg:w-[60%] h-full flex flex-col items-start justify-start gap-4"
             onKeyDown={(e) => {
               if (e.key == "Enter") handleSignUp();
             }}
