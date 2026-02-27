@@ -28,14 +28,6 @@ const Navbar = () => {
       ),
     },
     {
-      name: "Trash",
-      path: "/trash",
-      icon: <TrashIcon className="w-5 h-5" />,
-      activeIcon: (
-        <TrashIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
       name: "Templates",
       path: "/templates",
       icon: <LayoutTemplateIcon className="w-5 h-5" />,
@@ -57,6 +49,14 @@ const Navbar = () => {
       icon: <SettingsIcon className="w-5 h-5" />,
       activeIcon: (
         <SettingsIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+    },
+    {
+      name: "Trash",
+      path: "/trash",
+      icon: <TrashIcon className="w-5 h-5" />,
+      activeIcon: (
+        <TrashIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
       ),
     },
   ];
@@ -106,9 +106,9 @@ const Navbar = () => {
   }, [pathname]);
 
   return (
-    <nav className="w-[25vw] xl:w-[20vw]  h-screen flex">
+    <nav className="md:w-[7vw] lg:w-[25vw] xl:w-[20vw] bg-white h-screen flex">
       {/* Collapsed Sidebar */}
-      <section className="w-[7vw] md:w-[6vw] lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
+      <section className="w-full lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
         <Image
           src={userStore.user?.profilePicUrl || "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"}
           alt="Profile Pic"

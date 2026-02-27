@@ -14,14 +14,15 @@ interface ButtonProps {
   onLoadingStyle?: string;
   onClick?: () => void;
   extendStyle?: string;
+  fontStyle?: 'medium' | 'bold' | 'semibold' | 'normal'
 }
 
-const Button = ({ variant, text, onClick, extendStyle, isLoading, onLoadingText, onLoadingStyle }: ButtonProps) => {
+const Button = ({ variant, text, onClick, extendStyle, isLoading, onLoadingText, onLoadingStyle, fontStyle }: ButtonProps) => {
   return (
     <>
       {variant === ButtonVariant.PRIMARY && (
         <button
-          className={`w-full bg-primary-blue text-white py-1 rounded-lg transition-all duration-300 ease-in-out outline-none font-semibold ${extendStyle || ""} ${isLoading ? onLoadingStyle || "opacity-50 cursor-default" : "cursor-pointer hover:text-gray-200 active:scale-95 hover:bg-primary-blue-hover"}`}
+          className={`w-full bg-primary-blue text-white py-1 rounded-lg transition-all duration-300 ease-in-out outline-none font-${fontStyle?fontStyle:'normal'} ${extendStyle || ""} ${isLoading ? onLoadingStyle || "opacity-50 cursor-default" : "cursor-pointer hover:text-gray-200 active:scale-95 hover:bg-primary-blue-hover"}`}
           onClick={onClick}
           disabled={isLoading}
         >

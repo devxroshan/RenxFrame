@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["renxframe.test", "*.renxframe.test"],
   images: {
     remotePatterns: [
       {
