@@ -12,8 +12,17 @@ interface Toast {
     iconType: ToastIcon;
 }
 
+export interface Site {
+    _id: string;
+    name: string;
+    subdomain: string;
+    owner: string;
+    isOnline: boolean;
+}
+
 type States = {
     toasts: Toast[],
+    sites: Site[]
     isAuth: boolean;
     isAuthChecked: boolean;
 }
@@ -24,13 +33,16 @@ type Actions = {
     clearAllToast: () => void;
     setIsAuth: (isAuth: boolean) => void;
     setIsAuthChecked: (isAuthChecked: boolean) => void;
+    setSites: (sites:Site[]) => void;
+    getSiteById: (id: string) => Site | undefined;
 }
 
 
-export const useAppStore = create<States & Actions>((set) => ({
+export const useAppStore = create<States & Actions>((set, get) => ({
     toasts: [],
     isAuth: false,
     isAuthChecked: false,
+    sites: [],
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,
@@ -48,5 +60,11 @@ export const useAppStore = create<States & Actions>((set) => ({
     })),
     setIsAuthChecked: (isAuthChecked: boolean) => set((state) => ({
         isAuthChecked
-    }))
+    })),
+    setSites: (sites: Site[]) => set((state) => ({
+        sites: [...state.sites, ...sites]
+    })),
+    getSiteById: (id):Site | undefined => {
+        return get().sites.find(site => site._id === id)
+    }
 }))

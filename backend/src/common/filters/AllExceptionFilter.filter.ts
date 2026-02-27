@@ -9,8 +9,8 @@ import { Response, Request } from 'express';
 import { AppConfigService } from 'src/config/app-config.service';
 import { Prisma } from '@prisma/client';
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
-
-
+import mongoose from 'mongoose';
+import { MongoServerError } from 'mongodb';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -19,14 +19,17 @@ export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       return this.handlePrismaError(exception, host);
-    }
-    else if (exception instanceof JsonWebTokenError || exception instanceof TokenExpiredError) {
+    } else if (
+      exception instanceof JsonWebTokenError ||
+      exception instanceof TokenExpiredError
+    ) {
       return this.handleJwtError(exception, host);
-    }
-    else if (exception instanceof HttpException) {
+    } else if (exception instanceof HttpException) {
       return this.handleHTTPError(exception, host);
     }
-    else {
+    else if(exception instanceof MongoServerError || exception instanceof mongoose.Error.ValidationError || exception instanceof mongoose.Error.CastError){
+      return this.handleMongoDBError(exception, host);
+    } else {
       return this.handleUnknownError(exception, host);
     }
   }
@@ -96,11 +99,51 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     res.status(status).json({
       ok: false,
-      code: exceptionResponse['code'] ||  exceptionResponse['error'],
-      msg: exceptionResponse['msg'] || exceptionResponse['message'] || 'An error occurred',
+      code: exceptionResponse['code'] || exceptionResponse['error'],
+      msg:
+        exceptionResponse['msg'] ||
+        exceptionResponse['message'] ||
+        'An error occurred',
       timestamp: new Date().toISOString(),
       path: ctx.getRequest<Request>().url,
       details: exceptionResponse['details'] || {},
+    });
+  }
+
+  handleMongoDBError(
+    exception:
+      | mongoose.Error.ValidationError
+      | mongoose.Error.CastError
+      | MongoServerError,
+    host: ArgumentsHost,
+  ) {
+    const ctx = host.switchToHttp();
+    const res = ctx.getResponse<Response>();
+
+    let errorRes:{code:HttpStatus, msg: string,details: {}} = {
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      msg: "Internal Server Error.",
+      details: {}
+    }
+
+    if (exception instanceof MongoServerError && exception.code === 11000) {
+      errorRes.code = HttpStatus.CONFLICT;
+      const key = Object.keys(exception.keyValue)[0]
+
+      errorRes.msg = `${key} ${exception.keyValue[key]} already exits.`
+      errorRes.details = {
+        field: [key],
+        value: [exception.keyValue[key]]
+      }
+    }
+
+    res.status(errorRes.code).json({
+      ok: false,
+      code: errorRes.code,
+      msg: errorRes.msg,
+      timestamp: new Date().toISOString(),
+      path: ctx.getRequest<Request>().url,
+      details: errorRes.details,
     });
   }
 
@@ -122,6 +165,8 @@ export class AllExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).redirect(`${this.appConfigService.FrontendUrl}/internal-server-error`);
+    res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .redirect(`${this.appConfigService.FrontendUrl}/internal-server-error`);
   }
 }

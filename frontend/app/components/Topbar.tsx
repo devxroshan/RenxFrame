@@ -1,7 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
 import Button, { ButtonVariant } from "./Button";
+
+import { useAppStore, Site } from "../stores/app.store";
 
 const Topbar = () => {
   const members = [
@@ -11,7 +15,19 @@ const Topbar = () => {
     { name: "Bob Brown", role: "Member", avatar: "/pic.jpg" },
   ];
 
-  const [isSiteOnline, setIsSiteOnline] = useState<boolean>(true);
+  // States
+  const [currentSite, setCurrentSite] = useState<Site | undefined>(undefined);
+
+  // Hooks
+  const searchParams = useSearchParams();
+
+  // Stores
+  const appStore = useAppStore();
+
+  useEffect(() => {
+    setCurrentSite(appStore.getSiteById(searchParams.get("site_id") as string));
+    return () => {};
+  }, [appStore.sites]);
 
   return (
     <main className="md:w-[93vw] lg:w-[75vw] xl:w-[80vw] h-[11vh] bg-secondary-bg border-b border-primary-border flex items-center justify-between px-2 py-1">
@@ -25,8 +41,8 @@ const Topbar = () => {
         />
 
         <div className="flex flex-col gap-0.5">
-          <span className="font-semibold">NextGenz Labs</span>
-          <span className="text-primary-text text-sm">nextgenzlabs.in</span>
+          <span className="font-semibold">{currentSite?.name}</span>
+          <span className="text-primary-text text-xs">{currentSite?.subdomain + '.renxframe.in'}</span>
         </div>
 
         <div className="flex flex-col items-end justify-center gap-0.5 w-18">
@@ -50,9 +66,12 @@ const Topbar = () => {
         </div>
 
         <select
-          className={`bg-secondary-bg border rounded-lg px-3 py-1 text-primary-text text-sm font-medium hover:bg-tertiary-bg transition-all duration-300 cursor-pointer focus:outline-none ${isSiteOnline ? "border-green-600" : "border-red-500"}`}
-          onChange={(e) => setIsSiteOnline(e.target.value == "online")}
-          value={isSiteOnline ? "online" : "offline"}
+          className={`bg-secondary-bg border rounded-lg px-3 py-1 text-primary-text text-sm font-medium hover:bg-tertiary-bg transition-all duration-300 cursor-pointer focus:outline-none ${currentSite?.isOnline ? "border-green-600" : "border-red-500"}`}
+          onChange={(e) => currentSite && setCurrentSite({
+            ...currentSite,
+            isOnline: e.target.value === 'online'
+          })}
+          value={currentSite?.isOnline ? "online" : "offline"}
         >
           <option value="online">Online</option>
           <option value="offline">Offline</option>

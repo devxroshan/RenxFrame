@@ -17,14 +17,29 @@ import { usePathname } from "next/navigation";
 import { useAppStore } from "../stores/app.store";
 import { useUserStore } from "../stores/user.store";
 
+interface SidebarItem {
+  name: string;
+  path: string | null;
+  icon: React.ReactNode;
+  activeIcon: React.ReactNode;
+}
+
 const Navbar = () => {
-  const navLinks = [
+  const navLinks: SidebarItem[] = [
     {
       name: "Dashboard",
       path: "/dashboard",
       icon: <LayoutDashboardIcon className="w-5 h-5" />,
       activeIcon: (
         <LayoutDashboardIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+    },
+    {
+      name: "Sites",
+      path: null,
+      icon: <LayoutTemplateIcon className="w-5 h-5" />,
+      activeIcon: (
+        <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
       ),
     },
     {
@@ -110,7 +125,10 @@ const Navbar = () => {
       {/* Collapsed Sidebar */}
       <section className="w-full lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
         <Image
-          src={userStore.user?.profilePicUrl || "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"}
+          src={
+            userStore.user?.profilePicUrl ||
+            "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"
+          }
           alt="Profile Pic"
           width={40}
           height={40}
@@ -120,17 +138,33 @@ const Navbar = () => {
 
         <div className="flex flex-col gap-0.5">
           {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              href={link.path}
-              className={`px-2 py-2 rounded-lg text-sm ${
-                activePath === link.path
-                  ? "bg-tertiary-bg text-primary-text"
-                  : "text-secondary-text hover:bg-tertiary-bg"
-              }`}
-            >
-              {activePath === link.path ? link.activeIcon : link.icon}
-            </Link>
+            <div key={link.name}>
+              {link.path != null && (
+                <Link
+                  key={link.path}
+                  href={link.path ?? ""}
+                  className={`px-2 py-2 rounded-lg text-sm ${
+                    activePath === link.path
+                      ? "bg-tertiary-bg text-primary-text"
+                      : "text-secondary-text hover:bg-tertiary-bg"
+                  }`}
+                >
+                  {activePath === link.path ? link.activeIcon : link.icon}
+                </Link>
+              )}
+              {link.path == null && (
+                <div
+                  key={link.path}
+                  className={`px-2 py-2 rounded-lg text-sm ${
+                    activePath === link.path
+                      ? "bg-tertiary-bg text-primary-text"
+                      : "text-secondary-text hover:bg-tertiary-bg"
+                  }`}
+                >
+                  {link.icon}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
@@ -148,7 +182,10 @@ const Navbar = () => {
         {/* Profile */}
         <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
           <Image
-            src={userStore.user?.profilePicUrl || "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"}
+            src={
+              userStore.user?.profilePicUrl ||
+              "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"
+            }
             alt="Profile Pic"
             width={40}
             height={40}
@@ -156,7 +193,9 @@ const Navbar = () => {
           />
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{userStore.user?.name || "User"}</span>
+            <span className="text-sm font-medium">
+              {userStore.user?.name || "User"}
+            </span>
             <span className="text-xs text-secondary-text">
               {userStore.user?.email || "user@example.com"}
             </span>
@@ -165,20 +204,9 @@ const Navbar = () => {
 
         {/* Sidebar Links */}
         <div className="flex flex-col w-full gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              href={link.path}
-              className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 transition-all duration-300 ${
-                activePath === link.path
-                  ? "bg-tertiary-bg"
-                  : "text-secondary-text hover:text-white hover:bg-tertiary-bg"
-              }`}
-            >
-              {activePath === link.path ? link.activeIcon : link.icon}
-              <span>{link.name}</span>
-            </Link>
-          ))}
+          {navLinks.map((item) => {
+            return item.path == null?<SidebarBtn key={item.name} item={item}/>:<SidebarLink key={item.name} item={item} activePath={activePath}/>
+          })}
         </div>
 
         {/* Recent Projects and Joined Workspaces */}
@@ -234,14 +262,41 @@ const Navbar = () => {
 
           <div className="flex flex-col">
             <span className="text-sm font-medium">{"NextGenZ Labs"}</span>
-            <span className="text-xs text-secondary-text">
-              {"20 Members"}
-            </span>
+            <span className="text-xs text-secondary-text">{"20 Members"}</span>
           </div>
         </div>
       </section>
     </nav>
   );
 };
+
+function SidebarLink({item, activePath}:{item: SidebarItem, activePath: string}) {
+  return (
+    <Link
+      key={item.path}
+      href={item.path ?? ""}
+      className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 transition-all duration-300 ${
+        activePath === item.path
+          ? "bg-tertiary-bg"
+          : "text-secondary-text hover:text-white hover:bg-tertiary-bg"
+      }`}
+    >
+      {activePath === item.path ? item.activeIcon : item.icon}
+      <span>{item.name}</span>
+    </Link>
+  );
+}
+
+function SidebarBtn({item}:{item: SidebarItem}){
+  return (
+    <div
+      key={item.name}
+      className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 transition-all duration-300 text-secondary-text hover:text-white hover:bg-tertiary-bg cursor-pointer`}
+    >
+      {item.activeIcon}
+      <span>{item.name}</span>
+    </div>
+  );
+}
 
 export default Navbar;
