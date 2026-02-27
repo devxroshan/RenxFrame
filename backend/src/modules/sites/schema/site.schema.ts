@@ -11,6 +11,12 @@ export class Site {
 
     @Prop({required: true, type: String})
     name: string;
+
+    @Prop({required: true, type: String, unique: true})
+    subdomain: string;
+
+    @Prop({required: true, type: Boolean, default: false})
+    isOnline: boolean;
 }
 
 export const SiteSchema = SchemaFactory.createForClass(Site);
