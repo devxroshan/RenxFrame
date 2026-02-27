@@ -130,7 +130,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       errorRes.code = HttpStatus.CONFLICT;
       const key = Object.keys(exception.keyValue)[0]
 
-      errorRes.msg = `${key} ${exception.keyValue[key]} already exits.`
+      errorRes.msg = `${key} ${exception.keyValue[key]} already exists.`
       errorRes.details = {
         field: [key],
         value: [exception.keyValue[key]]
