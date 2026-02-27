@@ -1,6 +1,6 @@
 'use client';
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import ProtectedRoute from "../Wrappers/ProtectedRoute";
 import Navbar from "../components/Navbar";
@@ -14,6 +14,7 @@ import { useEffect } from "react";
 const Dashboard = () => {
   // Hooks
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const appStore = useAppStore()
 

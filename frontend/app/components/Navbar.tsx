@@ -218,10 +218,10 @@ const Navbar = () => {
             </span>
 
             <div className="flex flex-col gap-1 w-full items-start justify-center">
-              {recentProjects.map((project) => (
+              {appStore.sites.map((project) => (
                 <Link
-                  key={project.link}
-                  href={project.link}
+                  key={project._id}
+                  href={`?site_id=${project._id}`}
                   className="px-2 py-1 rounded-md hover:bg-tertiary-bg w-full cursor-pointer text-sm transition-all duration-300 text-primary-text hover:text-white"
                 >
                   {project.name}

@@ -27,7 +27,7 @@ const Topbar = () => {
   useEffect(() => {
     setCurrentSite(appStore.getSiteById(searchParams.get("site_id") as string));
     return () => {};
-  }, [appStore.sites]);
+  }, [appStore.sites, searchParams.get('site_id')]);
 
   return (
     <main className="md:w-[93vw] lg:w-[75vw] xl:w-[80vw] h-[11vh] bg-secondary-bg border-b border-primary-border flex items-center justify-between px-2 py-1">
