@@ -29,6 +29,15 @@ const Button = ({ variant, text, onClick, extendStyle, isLoading, onLoadingText,
           {isLoading ? onLoadingText || "Wait..." : text}
         </button>
       )}
+      {variant === ButtonVariant.SECONDARY && (
+        <button
+          className={`w-full bg-tertiary-bg text-primary-text py-1 rounded-lg transition-all duration-300 ease-in-out outline-none font-${fontStyle?fontStyle:'normal'} ${extendStyle || ""} ${isLoading ? onLoadingStyle || "opacity-50 cursor-default" : "cursor-pointer hover:text-gray-200 active:scale-95 hover:bg-tertiary-bg-hover"}`}
+          onClick={onClick}
+          disabled={isLoading}
+        >
+          {isLoading ? onLoadingText || "Wait..." : text}
+        </button>
+      )}
       {variant === ButtonVariant.SECONDARY_OUTLINE && (
         <button className={`w-full bg-tertiary-bg border border-primary-border text-primary-text py-1 rounded-lg transition-all duration-300 ease-in-out outline-none font-semibold text-sm ${extendStyle || ""} ${isLoading ? onLoadingStyle || "opacity-50 cursor-default" : "cursor-pointer hover:bg-tertiary-bg-hover active:scale-95"}`} disabled={isLoading} onClick={onClick}>
           {isLoading ? onLoadingText || "Wait..." : text}

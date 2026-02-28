@@ -20,11 +20,20 @@ export interface Site {
     isOnline: boolean;
 }
 
+export interface Workspace {
+    _id: string;
+    name: string;
+    link: string;
+    owner: string;
+}
+
 type States = {
     toasts: Toast[],
     sites: Site[]
     isAuth: boolean;
     isAuthChecked: boolean;
+    joinedWorkspaces: Workspace[];
+    recentProjects: Site[];
 }
 
 type Actions = {
@@ -43,6 +52,8 @@ export const useAppStore = create<States & Actions>((set, get) => ({
     isAuth: false,
     isAuthChecked: false,
     sites: [],
+    joinedWorkspaces: [],
+    recentProjects: [],
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,

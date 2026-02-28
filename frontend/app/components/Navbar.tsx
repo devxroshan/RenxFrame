@@ -76,36 +76,6 @@ const Navbar = () => {
     },
   ];
 
-  const recentProjects = [
-    {
-      name: "Project 1",
-      link: "/project/1",
-    },
-    {
-      name: "Project 2",
-      link: "/project/2",
-    },
-    {
-      name: "Project 3",
-      link: "/project/3",
-    },
-  ];
-
-  const joinedWorkspaces = [
-    {
-      name: "Workspace 1",
-      link: "/workspace/1",
-    },
-    {
-      name: "Workspace 2",
-      link: "/workspace/2",
-    },
-    {
-      name: "Workspace 3",
-      link: "/workspace/3",
-    },
-  ];
-
   //   States
   const [activePath, setActivePath] = useState<string>("");
 
@@ -136,36 +106,29 @@ const Navbar = () => {
           unoptimized
         />
 
-        <div className="flex flex-col gap-0.5">
-          {navLinks.map((link) => (
-            <div key={link.name}>
-              {link.path != null && (
-                <Link
-                  key={link.path}
-                  href={link.path ?? ""}
-                  className={`px-2 py-2 rounded-lg text-sm ${
-                    activePath === link.path
-                      ? "bg-tertiary-bg text-primary-text"
-                      : "text-secondary-text hover:bg-tertiary-bg"
-                  }`}
-                >
-                  {activePath === link.path ? link.activeIcon : link.icon}
-                </Link>
-              )}
-              {link.path == null && (
-                <div
-                  key={link.path}
-                  className={`px-2 py-2 rounded-lg text-sm ${
-                    activePath === link.path
-                      ? "bg-tertiary-bg text-primary-text"
-                      : "text-secondary-text hover:bg-tertiary-bg"
-                  }`}
-                >
-                  {link.icon}
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="flex flex-col gap-0.5 items-center justify-start">
+          {navLinks.map((item) => {
+            return item.path != null ? (
+              <Link
+                key={item.path}
+                href={item.path ?? ""}
+                className={`px-2 py-2 rounded-lg text-sm transition-all duration-300 ${
+                  activePath === item.path
+                    ? "bg-tertiary-bg text-primary-text"
+                    : "text-secondary-text hover:bg-tertiary-bg hover:text-white"
+                }`}
+              >
+                {activePath === item.path ? item.activeIcon : item.icon}
+              </Link>
+            ) : (
+              <div
+                key={item.name}
+                className={`px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-3 transition-all duration-300 text-secondary-text hover:text-white hover:bg-tertiary-bg cursor-pointer`}
+              >
+                {item.icon}
+              </div>
+            );
+          })}
         </div>
 
         <Image
@@ -205,7 +168,15 @@ const Navbar = () => {
         {/* Sidebar Links */}
         <div className="flex flex-col w-full gap-1">
           {navLinks.map((item) => {
-            return item.path == null?<SidebarBtn key={item.name} item={item}/>:<SidebarLink key={item.name} item={item} activePath={activePath}/>
+            return item.path == null ? (
+              <SidebarBtn key={item.name} item={item} activePath={activePath} />
+            ) : (
+              <SidebarLink
+                key={item.name}
+                item={item}
+                activePath={activePath}
+              />
+            );
           })}
         </div>
 
@@ -218,7 +189,7 @@ const Navbar = () => {
             </span>
 
             <div className="flex flex-col gap-1 w-full items-start justify-center">
-              {appStore.sites.map((project) => (
+              {appStore.recentProjects.length != 0 && appStore.recentProjects.map((project) => (
                 <Link
                   key={project._id}
                   href={`?site_id=${project._id}`}
@@ -237,9 +208,9 @@ const Navbar = () => {
             </span>
 
             <div className="flex flex-col gap-1 w-full items-start justify-center">
-              {joinedWorkspaces.map((workspace) => (
+              {appStore.joinedWorkspaces.length != 0 && appStore.joinedWorkspaces.map((workspace) => (
                 <Link
-                  key={workspace.link}
+                  key={workspace._id}
                   href={workspace.link}
                   className="px-2 py-1 rounded-md hover:bg-tertiary-bg w-full cursor-pointer text-sm transition-all duration-300 text-primary-text hover:text-white"
                 >
@@ -270,7 +241,13 @@ const Navbar = () => {
   );
 };
 
-function SidebarLink({item, activePath}:{item: SidebarItem, activePath: string}) {
+function SidebarLink({
+  item,
+  activePath,
+}: {
+  item: SidebarItem;
+  activePath: string;
+}) {
   return (
     <Link
       key={item.path}
@@ -287,13 +264,19 @@ function SidebarLink({item, activePath}:{item: SidebarItem, activePath: string})
   );
 }
 
-function SidebarBtn({item}:{item: SidebarItem}){
+function SidebarBtn({
+  item,
+  activePath,
+}: {
+  item: SidebarItem;
+  activePath: string;
+}) {
   return (
     <div
       key={item.name}
       className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 transition-all duration-300 text-secondary-text hover:text-white hover:bg-tertiary-bg cursor-pointer`}
     >
-      {item.activeIcon}
+      {activePath === item.path ? item.activeIcon : item.icon}
       <span>{item.name}</span>
     </div>
   );
