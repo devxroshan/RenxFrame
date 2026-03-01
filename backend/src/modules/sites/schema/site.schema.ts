@@ -17,6 +17,9 @@ export class Site {
 
     @Prop({required: true, type: Boolean, default: false})
     isOnline: boolean;
+
+    @Prop({required: true, type: String})
+    type: "website" | "template";
 }
 
 export const SiteSchema = SchemaFactory.createForClass(Site);
