@@ -1,9 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
-
-export enum SiteType {
-  WEBSITE = "website",
-  TEMPLATE = "template"
-}
+import { IsBoolean, IsEnum, IsNotEmpty, IsString } from "class-validator";
 
 
 export class CreateSiteDto {
@@ -16,6 +11,6 @@ export class CreateSiteDto {
     subdomain: string;
 
     @IsNotEmpty()
-    @IsEnum(SiteType)
-    type: SiteType;
+    @IsBoolean()
+    isWebsite: boolean;
 }

@@ -15,11 +15,11 @@ export class Site {
     @Prop({required: true, type: String, unique: true})
     subdomain: string;
 
-    @Prop({required: true, type: Boolean, default: false})
+    @Prop({type: Boolean, default: false})
     isOnline: boolean;
 
-    @Prop({required: true, type: String})
-    type: "website" | "template";
+    @Prop({required: true, type: Boolean})
+    isWebsite: boolean;
 }
 
 export const SiteSchema = SchemaFactory.createForClass(Site);

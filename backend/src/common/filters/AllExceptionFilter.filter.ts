@@ -120,14 +120,16 @@ export class AllExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
 
-    let errorRes:{code:HttpStatus, msg: string,details: {}} = {
-      code: HttpStatus.INTERNAL_SERVER_ERROR,
+    let errorRes:{code:string, msg: string,status: HttpStatus, details: {}} = {
+      code: "UNKNOWN_ERROR",
       msg: "Internal Server Error.",
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
       details: {}
     }
 
     if (exception instanceof MongoServerError && exception.code === 11000) {
-      errorRes.code = HttpStatus.CONFLICT;
+      errorRes.code = "CONFLICT";
+      errorRes.status = HttpStatus.CONFLICT
       const key = Object.keys(exception.keyValue)[0]
 
       errorRes.msg = `${key} ${exception.keyValue[key]} already exists.`
@@ -137,7 +139,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       }
     }
 
-    res.status(errorRes.code).json({
+    res.status(errorRes.status).json({
       ok: false,
       code: errorRes.code,
       msg: errorRes.msg,

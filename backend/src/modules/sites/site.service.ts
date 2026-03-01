@@ -53,10 +53,11 @@ export class SiteService {
     });
 
     if (site.length == 0) {
-      throw new NotFoundException({
-        code: 'SITE_NOT_FOUND',
-        msg: 'Site not found.',
-      });
+      return {
+        ok:true,
+        msg: 'No sites yet.',
+        data: []
+      }
     }
 
     return {
