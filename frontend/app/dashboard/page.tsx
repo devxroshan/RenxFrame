@@ -1,86 +1,110 @@
 "use client";
-import { useMutation, UseMutationResult, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 
 import ProtectedRoute from "../Wrappers/ProtectedRoute";
+import Topbar from "../components/Topbar";
 import Navbar from "../components/Navbar";
 import Button, { ButtonVariant } from "../components/Button";
 import CreateNewProject from "../windows/CreateNewProject";
+import { Site } from "../stores/app.store";
+import SitesList from "../windows/SitesList";
 
 import { useAppStore } from "../stores/app.store";
 
-import { CreateSiteAPI, GetAllSiteAPI } from "../api/site.api";
-import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
 
-export type NewProjectInfo = {
-  name: string;
-  subdomain: string;
-  type: "website" | "template";
-}
 
 const Dashboard = () => {
   // States
   const [isCreateNewProject, setIsCreateNewProject] = useState<boolean>(false);
-  const [newProjectInfo, setNewProjectInfo] = useState<NewProjectInfo>({
-    name: "",
-    subdomain: "",
-    type: "website",
-  });
 
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Stores
   const appStore = useAppStore();
 
-  // Mutations
-  const createNewProjectMutation = useMutation<APISuccessResponse, APIErrorReseponse, NewProjectInfo>({
-    mutationFn: CreateSiteAPI,
-    onSuccess: (data) => {},
-    onError: (err: APIErrorReseponse) => {},
-  });
+  // Variables
+  const siteIdParam = searchParams.get("site_id");
+  const currentProject = appStore.getSiteById(siteIdParam as string);
 
-  const handleCreateNewProject = () => {};
 
   return (
     <ProtectedRoute>
+      <SitesList></SitesList>
       <main className="w-screen h-screen flex items-start justify-start">
         <Navbar />
+        {currentProject && <Topbar currentSite={currentProject} />}
 
-        <div
-          className="
+        {!currentProject && (
+          <div
+            className="
             flex-1 flex flex-col items-center justify-center h-screen bg-primary-bg"
-        >
-          <div className="text-center space-y-6">
-            <div className="w-full flex items-center justify-center">
-              <Image
-                src={"/logo.png"}
-                alt="Logo"
-                width={85}
-                height={85}
-                className="rounded-xl border border-primary-border"
+          >
+            <div className="text-center space-y-6">
+              <div className="w-full flex items-center justify-center">
+                <Image
+                  src={"/logo.png"}
+                  alt="Logo"
+                  width={85}
+                  height={85}
+                  className="rounded-xl border border-primary-border"
+                />
+              </div>
+              {appStore.sites.length == 0 && (
+                <h1 className="text-4xl font-bold text-primary-text">
+                  No Projects Yet
+                </h1>
+              )}
+              <p className="text-secon max-w-md">
+                Get started by creating your first project to begin building
+                amazing things.
+              </p>
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                extendStyle="mt-2 py-2"
+                fontStyle="semibold"
+                text="Create new project"
+                onClick={() => setIsCreateNewProject(true)}
               />
-            </div>
-            <h1 className="text-4xl font-bold text-primary-text">
-              No Projects Yet
-            </h1>
-            <p className="text-secon max-w-md">
-              Get started by creating your first project to begin building
-              amazing things.
-            </p>
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              extendStyle="mt-2 py-2"
-              fontStyle="semibold"
-              text="Create new project"
-              onClick={() => setIsCreateNewProject(true)}
-            />
-          </div>
-        </div>
 
-        {isCreateNewProject && <CreateNewProject setIsCreateNewProject={setIsCreateNewProject} newProjectInfo={newProjectInfo} createNewProjectMutation={createNewProjectMutation} setNewProjectInfo={setNewProjectInfo} handleCreateNewProject={handleCreateNewProject} />}
+              {appStore.sites.length > 0 && (
+                <div className="mt-8 w-full h-72 max-w-2xl">
+                  <h2 className="text-lg font-semibold text-primary-text mb-4">
+                    Recent Projects
+                  </h2>
+                  <div className="w-full h-full min-h-0 overflow-y-auto no-scrollbar flex flex-col gap-1 items-start justify-start">
+                    {appStore.sites.map((site: Site) => (
+                      <div
+                        key={site._id}
+                        onClick={() => router.replace(`?site_id=${site._id}`)}
+                        className="p-3 rounded-xl border border-primary-border bg-secondary-bg hover:bg-tertiary-bg cursor-pointer transition-colors w-full flex items-center justify-start"
+                      >
+                        <div className="flex flex-col gap-0.5 items-start justify-center">
+                          <span className="font-medium text-primary-text truncate">
+                            {site.name}
+                          </span>
+                          <span className="text-sm text-secondary-text truncate">
+                            {site.subdomain}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {isCreateNewProject && (
+          <CreateNewProject
+            setIsCreateNewProject={setIsCreateNewProject}
+          />
+        )}
       </main>
     </ProtectedRoute>
   );

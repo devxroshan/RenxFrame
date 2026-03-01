@@ -1,33 +1,87 @@
+'use client';
 import React from "react";
-import { UseMutationResult } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-import Button, {ButtonVariant} from "../components/Button";
-import Input, {InputVariant} from "../components/Input";
+import Button, { ButtonVariant } from "../components/Button";
+import Input, { InputVariant } from "../components/Input";
 import Template from "../components/Template";
 
 
-import { NewProjectInfo } from "../dashboard/page";
+import { CreateSiteAPI } from "../api/site.api";
 import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
 
+// Stores
+import { useAppStore } from "../stores/app.store";
+
+import { ToastIcon } from "../config/types.config";
+
 interface CreateNewProjectProps {
-  newProjectInfo: NewProjectInfo;
-  setNewProjectInfo: React.Dispatch<React.SetStateAction<NewProjectInfo>>;
   setIsCreateNewProject: React.Dispatch<React.SetStateAction<boolean>>;
-  handleCreateNewProject: () => void;
-  createNewProjectMutation: UseMutationResult<
+}
+
+export type NewProjectInfo = {
+  name: string;
+  subdomain: string;
+  isWebsite: boolean;
+};
+
+const CreateNewProject = ({ setIsCreateNewProject }: CreateNewProjectProps) => {
+  // States
+  const [newProjectInfo, setNewProjectInfo] = useState<NewProjectInfo>({
+    name: "",
+    subdomain: "",
+    isWebsite: true,
+  });
+
+  // Hooks
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  // Stores
+  const appStore = useAppStore();
+
+  // Mutations
+  const createNewProjectMutation = useMutation<
     APISuccessResponse,
     APIErrorReseponse,
     NewProjectInfo
-  >;
-}
+  >({
+    mutationFn: CreateSiteAPI,
+    onSuccess: (data) => {
+      appStore.addToast({
+        msg: data.msg,
+        code: "Created Successfully.",
+        iconType: ToastIcon.SUCCESS,
+      });
 
-const CreateNewProject = ({
-  newProjectInfo,
-  setNewProjectInfo,
-  setIsCreateNewProject,
-  handleCreateNewProject,
-  createNewProjectMutation,
-}: CreateNewProjectProps) => {
+      if (data.ok) {
+        setIsCreateNewProject(false);
+        appStore.setSites([data?.data])
+        router.replace(`?site_id=${data?.data?._id}`);
+      }
+    },
+    onError: (err: APIErrorReseponse) => {
+      appStore.addToast({
+        msg: err.msg,
+        code: err.code,
+        iconType: err.status == 500 ? ToastIcon.ERROR : ToastIcon.WARNING,
+      });
+    },
+  });
+
+  // Handlers
+  const handleCreateNewProject = () => {
+    if (
+      !newProjectInfo.name ||
+      !newProjectInfo.subdomain ||
+      newProjectInfo.subdomain !== newProjectInfo.subdomain.toLowerCase()
+    )
+      return;
+    createNewProjectMutation.mutate(newProjectInfo);
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -58,11 +112,11 @@ const CreateNewProject = ({
               <div className="w-full flex flex-col gap-2">
                 <div className="w-full flex rounded-xl border border-primary-border py-1 px-1 gap-1 bg-secondary-bg">
                   <button
-                    className={`transition-all duration-300 ease-in-out border rounded-lg py-1 w-[50%] cursor-pointer ${newProjectInfo.type === "website" ? "text-white bg-primary-bg border-primary-border" : "text-primary-text hover:bg-tertiary-bg border-transparent hover:text-white"}`}
+                    className={`transition-all duration-300 ease-in-out border rounded-lg py-1 w-[50%] cursor-pointer ${newProjectInfo.isWebsite ? "text-white bg-primary-bg border-primary-border" : "text-primary-text hover:bg-tertiary-bg border-transparent hover:text-white"}`}
                     onClick={() =>
                       setNewProjectInfo({
                         ...newProjectInfo,
-                        type: "website",
+                        isWebsite: true,
                       })
                     }
                   >
@@ -70,11 +124,11 @@ const CreateNewProject = ({
                   </button>
 
                   <button
-                    className={`transition-all duration-300 ease-in-out border rounded-lg py-1 w-[50%] cursor-pointer ${newProjectInfo.type === "template" ? "text-white bg-primary-bg border-primary-border" : "text-primary-text hover:bg-tertiary-bg border-transparent hover:text-white"}`}
+                    className={`transition-all duration-300 ease-in-out border rounded-lg py-1 w-[50%] cursor-pointer ${!newProjectInfo.isWebsite ? "text-white bg-primary-bg border-primary-border" : "text-primary-text hover:bg-tertiary-bg border-transparent hover:text-white"}`}
                     onClick={() =>
                       setNewProjectInfo({
                         ...newProjectInfo,
-                        type: "template",
+                        isWebsite: false,
                       })
                     }
                   >
@@ -82,30 +136,37 @@ const CreateNewProject = ({
                   </button>
                 </div>
 
-                <Input
-                  variant={InputVariant.PRIMARY}
-                  value={newProjectInfo.name}
-                  placeholder="Name"
-                  onChange={(e) =>
-                    setNewProjectInfo({
-                      ...newProjectInfo,
-                      name: e.target.value,
-                    })
-                  }
-                />
-                {newProjectInfo.type != "template" && (
+                <div
+                  className="flex flex-col items-center justify-center gap-2"
+                  onKeyDown={(e) => {
+                    if (e.key == "Enter") handleCreateNewProject();
+                  }}
+                >
                   <Input
                     variant={InputVariant.PRIMARY}
-                    value={newProjectInfo.subdomain}
-                    placeholder="Subdomain"
+                    value={newProjectInfo.name}
+                    placeholder="Name"
                     onChange={(e) =>
                       setNewProjectInfo({
                         ...newProjectInfo,
-                        subdomain: e.target.value,
+                        name: e.target.value,
                       })
                     }
                   />
-                )}
+                  {newProjectInfo.isWebsite && (
+                    <Input
+                      variant={InputVariant.PRIMARY}
+                      value={newProjectInfo.subdomain}
+                      placeholder="Subdomain"
+                      onChange={(e) =>
+                        setNewProjectInfo({
+                          ...newProjectInfo,
+                          subdomain: e.target.value,
+                        })
+                      }
+                    />
+                  )}
+                </div>
 
                 <div className="flex flex-col w-full gap-2 mt-2">
                   <Button

@@ -5,6 +5,7 @@ import "./globals.css";
 // Wrappers
 import QueryClientProviders from "./Wrappers/QueryClientProviders";
 import IsAuthenticated from "./Wrappers/IsAuthenticated";
+import FetchData from "./Wrappers/FetchData";
 
 // Components
 import ToastContainer from "./components/ToastContainer";
@@ -30,10 +31,12 @@ export default function RootLayout({
     <html lang="en">
       <QueryClientProviders>
         <IsAuthenticated>
-          <body className={`${inter.className} antialiased select-none`}>
-            {children}
-            <ToastContainer />
-          </body>
+          <FetchData>
+            <body className={`${inter.className} antialiased select-none`}>
+              {children}
+              <ToastContainer />
+            </body>
+          </FetchData>
         </IsAuthenticated>
       </QueryClientProviders>
     </html>

@@ -1,15 +1,11 @@
 "use client";
 import Image from "next/image";
 import {
-  Menu,
   LayoutDashboardIcon,
-  CheckCircleIcon,
-  Clock,
   LayoutTemplateIcon,
   SettingsIcon,
   TrashIcon,
   GlobeIcon,
-  FileTextIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -97,7 +93,7 @@ const Navbar = () => {
         <Image
           src={
             userStore.user?.profilePicUrl ||
-            "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"
+            "/user-pfp.png"
           }
           alt="Profile Pic"
           width={40}
@@ -145,10 +141,7 @@ const Navbar = () => {
         {/* Profile */}
         <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
           <Image
-            src={
-              userStore.user?.profilePicUrl ||
-              "https://lh3.googleusercontent.com/a/ACg8ocJVwOYcWe5ytGqUPCCdgscKr5iLL45BoJqC7S_PYwCqHmOGDtWo=s96-c?v=2"
-            }
+            src={userStore.user?.profilePicUrl || "/user-pfp.png"}
             alt="Profile Pic"
             width={40}
             height={40}
@@ -189,15 +182,16 @@ const Navbar = () => {
             </span>
 
             <div className="flex flex-col gap-1 w-full items-start justify-center">
-              {appStore.recentProjects.length != 0 && appStore.recentProjects.map((project) => (
-                <Link
-                  key={project._id}
-                  href={`?site_id=${project._id}`}
-                  className="px-2 py-1 rounded-md hover:bg-tertiary-bg w-full cursor-pointer text-sm transition-all duration-300 text-primary-text hover:text-white"
-                >
-                  {project.name}
-                </Link>
-              ))}
+              {appStore.sites.length != 0 &&
+                appStore.sites.slice(0, 9).map((project) => (
+                  <Link
+                    key={project._id}
+                    href={`?site_id=${project._id}`}
+                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
+                  >
+                    {project.name}
+                  </Link>
+                ))}
             </div>
           </div>
 
@@ -208,15 +202,16 @@ const Navbar = () => {
             </span>
 
             <div className="flex flex-col gap-1 w-full items-start justify-center">
-              {appStore.joinedWorkspaces.length != 0 && appStore.joinedWorkspaces.map((workspace) => (
-                <Link
-                  key={workspace._id}
-                  href={workspace.link}
-                  className="px-2 py-1 rounded-md hover:bg-tertiary-bg w-full cursor-pointer text-sm transition-all duration-300 text-primary-text hover:text-white"
-                >
-                  {workspace.name}
-                </Link>
-              ))}
+              {appStore.joinedWorkspaces.length != 0 &&
+                appStore.joinedWorkspaces.map((workspace) => (
+                  <Link
+                    key={workspace._id}
+                    href={`?site_id=${workspace._id}`}
+                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
+                  >
+                    {workspace.name}
+                  </Link>
+                ))}
             </div>
           </div>
         </section>

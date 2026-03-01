@@ -4,10 +4,15 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 import Button, { ButtonVariant } from "./Button";
+import CreateNewProject from "../windows/CreateNewProject";
 
 import { useAppStore, Site } from "../stores/app.store";
 
-const Topbar = () => {
+interface TopbarProps {
+  currentSite: Site;
+}
+
+const Topbar = ({ currentSite }: TopbarProps) => {
   const members = [
     { name: "John Doe", role: "Admin", avatar: "/pic.jpg" },
     { name: "Jane Smith", role: "Member", avatar: "/pic.jpg" },
@@ -16,22 +21,12 @@ const Topbar = () => {
   ];
 
   // States
-  const [currentSite, setCurrentSite] = useState<Site | undefined>(undefined);
+  const [isNewProject, setIsNewProject] = useState<boolean>(false);
 
-  // Hooks
-  const searchParams = useSearchParams();
-
-  // Stores
-  const appStore = useAppStore();
-
-  useEffect(() => {
-    setCurrentSite(appStore.getSiteById(searchParams.get("site_id") as string));
-    return () => {};
-  }, [appStore.sites, searchParams.get('site_id')]);
 
   return (
     <main className="md:w-[93vw] lg:w-[75vw] xl:w-[80vw] h-[11vh] bg-secondary-bg border-b border-primary-border flex items-center justify-between px-2 py-1">
-      <div className="hover:bg-tertiary-bg transition-all duration-300 flex px-2 py-1 rounded-lg items-center justify-center gap-2 cursor-pointer">
+      <div className="hover:bg-tertiary-bg transition-all duration-300 flex px-1.5 py-1.5 rounded-lg items-center justify-center gap-2 cursor-pointer">
         <Image
           src="/pic.jpg"
           alt="Website Logo"
@@ -42,7 +37,9 @@ const Topbar = () => {
 
         <div className="flex flex-col gap-0.5">
           <span className="font-semibold">{currentSite?.name}</span>
-          <span className="text-primary-text text-xs">{currentSite?.subdomain + '.renxframe.in'}</span>
+          <span className="text-primary-text text-xs">
+            {currentSite?.subdomain + ".renxframe.in"}
+          </span>
         </div>
 
         <div className="flex flex-col items-end justify-center gap-0.5 w-18">
@@ -64,28 +61,18 @@ const Topbar = () => {
             6 Members
           </span>
         </div>
-
-        <select
-          className={`bg-secondary-bg border rounded-lg px-3 py-1 text-primary-text text-sm font-medium hover:bg-tertiary-bg transition-all duration-300 cursor-pointer focus:outline-none ${currentSite?.isOnline ? "border-green-600" : "border-red-500"}`}
-          onChange={(e) => currentSite && setCurrentSite({
-            ...currentSite,
-            isOnline: e.target.value === 'online'
-          })}
-          value={currentSite?.isOnline ? "online" : "offline"}
-        >
-          <option value="online">Online</option>
-          <option value="offline">Offline</option>
-        </select>
       </div>
 
       <div className="w-32">
         <Button
           variant={ButtonVariant.PRIMARY}
           text="New Project"
-          onClick={() => alert("New Project Clicked")}
+          onClick={() => setIsNewProject(true)}
           extendStyle="py-1.5"
         />
       </div>
+
+      {isNewProject && <CreateNewProject setIsCreateNewProject={setIsNewProject}/>}
     </main>
   );
 };

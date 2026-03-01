@@ -33,7 +33,6 @@ type States = {
     isAuth: boolean;
     isAuthChecked: boolean;
     joinedWorkspaces: Workspace[];
-    recentProjects: Site[];
 }
 
 type Actions = {
@@ -53,7 +52,6 @@ export const useAppStore = create<States & Actions>((set, get) => ({
     isAuthChecked: false,
     sites: [],
     joinedWorkspaces: [],
-    recentProjects: [],
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,
