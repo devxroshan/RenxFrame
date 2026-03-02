@@ -33,6 +33,8 @@ type States = {
     isAuth: boolean;
     isAuthChecked: boolean;
     joinedWorkspaces: Workspace[];
+    isSiteListActive: boolean;
+    createNewProject: boolean;
 }
 
 type Actions = {
@@ -43,6 +45,8 @@ type Actions = {
     setIsAuthChecked: (isAuthChecked: boolean) => void;
     setSites: (sites:Site[]) => void;
     getSiteById: (id: string) => Site | undefined;
+    setSiteListActive:(isActive: boolean) => void;
+    setCreateNewProject: (isCreate: boolean) => void;
 }
 
 
@@ -52,6 +56,8 @@ export const useAppStore = create<States & Actions>((set, get) => ({
     isAuthChecked: false,
     sites: [],
     joinedWorkspaces: [],
+    isSiteListActive: false,
+    createNewProject: false,
     addToast: (toast: Omit<Toast, 'id'>) => set((state) => ({
         toasts: [...state.toasts, {
             ...toast,
@@ -75,5 +81,11 @@ export const useAppStore = create<States & Actions>((set, get) => ({
     })),
     getSiteById: (id):Site | undefined => {
         return get().sites.find(site => site._id === id)
-    }
+    },
+    setSiteListActive: (isActive) => set((state) => ({
+        isSiteListActive: isActive
+    })),
+    setCreateNewProject: (isCreate) => set((state) => ({
+        createNewProject: isCreate
+    })),
 }))

@@ -20,13 +20,15 @@ const FetchData = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const sites = siteQuery.data?.data
-        if(sites?.length > 0){
+        if(sites?.length > 0 && appStore.sites.length != sites?.length){
             appStore.setSites(sites)
         }else {
             appStore.setSites([])
             if(!searchParams.get('site_id'))
                 router.replace('/dashboard')
         }
+
+        return () => appStore.setSites([])
     }, [siteQuery.data])
     
 

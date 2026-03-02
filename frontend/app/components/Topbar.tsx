@@ -66,13 +66,11 @@ const Topbar = ({ currentSite }: TopbarProps) => {
       <div className="w-32">
         <Button
           variant={ButtonVariant.PRIMARY}
-          text="New Project"
+          text="Go to Editor"
           onClick={() => setIsNewProject(true)}
           extendStyle="py-1.5"
         />
       </div>
-
-      {isNewProject && <CreateNewProject setIsCreateNewProject={setIsNewProject}/>}
     </main>
   );
 };

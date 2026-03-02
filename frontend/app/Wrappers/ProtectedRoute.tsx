@@ -7,17 +7,13 @@ import { useEffect } from "react";
 import { useAppStore } from "../stores/app.store";
 import useWindowSize from "../hooks/useWindowSize";
 
-import NotAvailable from "../components/NotAvailable";
+import NotAvailable from "./NotAvailable";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const TABLET_SCREEN = 768;
-
   // Hooks
   const router = useRouter();
   const pathname = usePathname();
 
-  // Custom Hooks
-  const windowSize = useWindowSize();
 
   // Stores
   const appStore = useAppStore();
@@ -35,17 +31,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       );
     }
     return () => {};
-  }, [router, appStore.isAuth, appStore.isAuthChecked, pathname, windowSize]);
+  }, [router, appStore.isAuth, appStore.isAuthChecked, pathname]);
 
-  return (
-    <>
-      {windowSize.width != undefined && windowSize.width <= TABLET_SCREEN ? (
-        <NotAvailable />
-      ) : (
-        children
-      )}
-    </>
-  );
+  return <>{children}</>
 };
 
 export default ProtectedRoute;

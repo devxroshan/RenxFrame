@@ -8,18 +8,14 @@ import ProtectedRoute from "../Wrappers/ProtectedRoute";
 import Topbar from "../components/Topbar";
 import Navbar from "../components/Navbar";
 import Button, { ButtonVariant } from "../components/Button";
-import CreateNewProject from "../windows/CreateNewProject";
 import { Site } from "../stores/app.store";
-import SitesList from "../windows/SitesList";
+import FloatingButton from "../components/FloatingButton";
 
 import { useAppStore } from "../stores/app.store";
 
 
 
 const Dashboard = () => {
-  // States
-  const [isCreateNewProject, setIsCreateNewProject] = useState<boolean>(false);
-
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,10 +30,10 @@ const Dashboard = () => {
 
   return (
     <ProtectedRoute>
-      <SitesList></SitesList>
       <main className="w-screen h-screen flex items-start justify-start">
         <Navbar />
         {currentProject && <Topbar currentSite={currentProject} />}
+        {currentProject && <FloatingButton/>}
 
         {!currentProject && (
           <div
@@ -68,7 +64,7 @@ const Dashboard = () => {
                 extendStyle="mt-2 py-2"
                 fontStyle="semibold"
                 text="Create new project"
-                onClick={() => setIsCreateNewProject(true)}
+                onClick={() => appStore.setCreateNewProject(true)}
               />
 
               {appStore.sites.length > 0 && (
@@ -98,12 +94,6 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        )}
-
-        {isCreateNewProject && (
-          <CreateNewProject
-            setIsCreateNewProject={setIsCreateNewProject}
-          />
         )}
       </main>
     </ProtectedRoute>

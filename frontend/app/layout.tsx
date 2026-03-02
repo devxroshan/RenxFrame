@@ -6,9 +6,14 @@ import "./globals.css";
 import QueryClientProviders from "./Wrappers/QueryClientProviders";
 import IsAuthenticated from "./Wrappers/IsAuthenticated";
 import FetchData from "./Wrappers/FetchData";
+import NotAvailable from "./Wrappers/NotAvailable";
 
 // Components
 import ToastContainer from "./components/ToastContainer";
+
+// Windows
+import SitesList from "./windows/SitesList";
+import CreateNewProject from "./windows/CreateNewProject";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,16 +34,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <QueryClientProviders>
-        <IsAuthenticated>
-          <FetchData>
-            <body className={`${inter.className} antialiased select-none`}>
-              {children}
-              <ToastContainer />
-            </body>
-          </FetchData>
-        </IsAuthenticated>
-      </QueryClientProviders>
+      <body className={`${inter.className} antialiased select-none`}>
+        <NotAvailable>
+          <QueryClientProviders>
+            <IsAuthenticated>
+              <FetchData>
+                {children}
+                <SitesList />
+                <CreateNewProject />
+                <ToastContainer />
+              </FetchData>
+            </IsAuthenticated>
+          </QueryClientProviders>
+        </NotAvailable>
+      </body>
     </html>
   );
 }

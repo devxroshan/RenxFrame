@@ -18,60 +18,10 @@ interface SidebarItem {
   path: string | null;
   icon: React.ReactNode;
   activeIcon: React.ReactNode;
+  action: (() => void) | undefined;
 }
 
 const Navbar = () => {
-  const navLinks: SidebarItem[] = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: <LayoutDashboardIcon className="w-5 h-5" />,
-      activeIcon: (
-        <LayoutDashboardIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
-      name: "Sites",
-      path: null,
-      icon: <LayoutTemplateIcon className="w-5 h-5" />,
-      activeIcon: (
-        <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
-      name: "Templates",
-      path: "/templates",
-      icon: <LayoutTemplateIcon className="w-5 h-5" />,
-      activeIcon: (
-        <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
-      name: "Subdomains",
-      path: "/subdomains",
-      icon: <GlobeIcon className="w-5 h-5" />,
-      activeIcon: (
-        <GlobeIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
-      name: "Settings",
-      path: "/settings",
-      icon: <SettingsIcon className="w-5 h-5" />,
-      activeIcon: (
-        <SettingsIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-    {
-      name: "Trash",
-      path: "/trash",
-      icon: <TrashIcon className="w-5 h-5" />,
-      activeIcon: (
-        <TrashIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
-      ),
-    },
-  ];
-
   //   States
   const [activePath, setActivePath] = useState<string>("");
 
@@ -86,15 +36,69 @@ const Navbar = () => {
     setActivePath(pathname);
   }, [pathname]);
 
+  const navLinks: SidebarItem[] = [
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: <LayoutDashboardIcon className="w-5 h-5" />,
+      activeIcon: (
+        <LayoutDashboardIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: undefined,
+    },
+    {
+      name: "Sites",
+      path: null,
+      icon: <LayoutTemplateIcon className="w-5 h-5" />,
+      activeIcon: (
+        <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: () => appStore.setSiteListActive(true)
+    },
+    {
+      name: "Templates",
+      path: "/templates",
+      icon: <LayoutTemplateIcon className="w-5 h-5" />,
+      activeIcon: (
+        <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: undefined,
+    },
+    {
+      name: "Subdomains",
+      path: "/subdomains",
+      icon: <GlobeIcon className="w-5 h-5" />,
+      activeIcon: (
+        <GlobeIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: undefined,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      activeIcon: (
+        <SettingsIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: undefined,
+    },
+    {
+      name: "Trash",
+      path: "/trash",
+      icon: <TrashIcon className="w-5 h-5" />,
+      activeIcon: (
+        <TrashIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
+      ),
+      action: undefined,
+    },
+  ];
+
   return (
     <nav className="md:w-[7vw] lg:w-[25vw] xl:w-[20vw] bg-white h-screen flex">
       {/* Collapsed Sidebar */}
       <section className="w-full lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
         <Image
-          src={
-            userStore.user?.profilePicUrl ||
-            "/user-pfp.png"
-          }
+          src={userStore.user?.profilePicUrl || "/user-pfp.png"}
           alt="Profile Pic"
           width={40}
           height={40}
@@ -162,7 +166,7 @@ const Navbar = () => {
         <div className="flex flex-col w-full gap-1">
           {navLinks.map((item) => {
             return item.path == null ? (
-              <SidebarBtn key={item.name} item={item} activePath={activePath} />
+              <SidebarBtn key={item.name} item={item} activePath={activePath} onClick={item.action} />
             ) : (
               <SidebarLink
                 key={item.name}
@@ -262,14 +266,17 @@ function SidebarLink({
 function SidebarBtn({
   item,
   activePath,
+  onClick
 }: {
   item: SidebarItem;
   activePath: string;
+  onClick: (() => void) | undefined;
 }) {
   return (
     <div
       key={item.name}
       className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 transition-all duration-300 text-secondary-text hover:text-white hover:bg-tertiary-bg cursor-pointer`}
+      onClick={onClick}
     >
       {activePath === item.path ? item.activeIcon : item.icon}
       <span>{item.name}</span>
