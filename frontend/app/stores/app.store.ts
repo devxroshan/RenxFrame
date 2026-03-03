@@ -35,6 +35,7 @@ type States = {
   workspaces: Workspace[];
   isSiteListActive: boolean;
   createNewProject: boolean;
+  isWorkspaceActive: boolean;
 };
 
 type Actions = {
@@ -49,6 +50,7 @@ type Actions = {
   setCreateNewProject: (isCreate: boolean) => void;
   setWorkspace: (workspaces: Workspace[]) => void;
   getWorkspaceById: (id: string) => Workspace | undefined;
+  setWorkspaceActive: (isActive: boolean) => void;
 };
 
 export const useAppStore = create<States & Actions>((set, get) => ({
@@ -60,6 +62,7 @@ export const useAppStore = create<States & Actions>((set, get) => ({
   isSiteListActive: false,
   createNewProject: false,
   workspaces: [],
+  isWorkspaceActive: false,
   addToast: (toast: Omit<Toast, "id">) =>
     set((state) => ({
       toasts: [
@@ -108,4 +111,7 @@ export const useAppStore = create<States & Actions>((set, get) => ({
   getWorkspaceById: (id: string): Workspace | undefined => {
     return get().workspaces.find((workspace) => workspace._id == id);
   },
+  setWorkspaceActive: (isActive) => set((state) => ({
+    isWorkspaceActive: isActive
+  })) 
 }));

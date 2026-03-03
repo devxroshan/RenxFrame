@@ -14,6 +14,7 @@ import ToastContainer from "./components/ToastContainer";
 // Windows
 import SitesList from "./windows/SitesList";
 import CreateNewProject from "./windows/CreateNewProject";
+import Workspace from "./windows/Workspace";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,6 +43,7 @@ export default function RootLayout({
                 {children}
                 <SitesList />
                 <CreateNewProject />
+                <Workspace />
                 <ToastContainer />
               </FetchData>
             </IsAuthenticated>

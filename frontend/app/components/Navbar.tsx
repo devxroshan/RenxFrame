@@ -243,7 +243,7 @@ const Navbar = () => {
         </section>
 
         {/* Current Workspace */}
-        <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
+        <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer" onClick={() => appStore.setWorkspaceActive(true)}>
           <Image
             src={currentWorkspace?.logo || "/pic.jpg"}
             alt="Workspace Logo"
