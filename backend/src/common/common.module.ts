@@ -6,8 +6,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
+import { ValidateMongoIdGuard } from './guards/validate-mongo-id.guard';
 
 @Module({
   imports: [
@@ -37,9 +38,10 @@ import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
   controllers: [],
   providers: [
     IsLoggedInGuard,
+    ValidateMongoIdGuard,
     EmailService,
     { provide: APP_FILTER, useClass: AllExceptionFilter },
   ],
-  exports: [IsLoggedInGuard, EmailService],
+  exports: [EmailService, IsLoggedInGuard, ValidateMongoIdGuard],
 })
 export class CommonModule {}

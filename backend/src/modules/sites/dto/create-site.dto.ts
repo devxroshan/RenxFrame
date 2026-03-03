@@ -13,4 +13,8 @@ export class CreateSiteDto {
     @IsNotEmpty()
     @IsBoolean()
     isWebsite: boolean;
+
+    @IsNotEmpty()
+    @IsString()
+    workspace: string;
 }

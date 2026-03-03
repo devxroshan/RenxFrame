@@ -5,7 +5,8 @@ import { IsLoggedInGuard } from "src/common/guards/is-logged-in.guard";
 import { Site } from "./schema/site.schema";
 import { SuccessResponse } from "src/type-declaration/response";
 import * as express from 'express';
-import { IsValidMongooseObjectIdGuard } from "./guards/is-valid-objectId.guard";
+import { ValidateMongoIdGuard } from "src/common/guards/validate-mongo-id.guard";
+import { ValidateMongoId } from "src/common/decorators/ValidateMongoId.decorator";
 
 @UseGuards(IsLoggedInGuard)
 @Controller("site")
@@ -13,15 +14,17 @@ export class SiteController {
     constructor(
         private readonly siteService: SiteService,
     ) {}
-    
+
+    @ValidateMongoId({body: ['workspace']})
+    @UseGuards(ValidateMongoIdGuard)
     @Post()
     async create(@Body() createSiteDto: CreateSiteDto, @Req() req: express.Request): Promise<SuccessResponse<Site>> {
         return this.siteService.create(createSiteDto, req.user?.id);
     }
 
-
+    @ValidateMongoId({param: ['site_id']})
+    @UseGuards(ValidateMongoIdGuard)
     @Get(':site_id')
-    @UseGuards(IsValidMongooseObjectIdGuard)
     async getSite(@Param('site_id') id:string): Promise<SuccessResponse<Site>> {
         return this.siteService.getSite(id);
     }

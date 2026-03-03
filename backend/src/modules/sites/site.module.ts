@@ -5,7 +5,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Site, SiteSchema } from "./schema/site.schema";
 import { CommonModule } from "src/common/common.module";
 import { JwtModule } from "@nestjs/jwt";
-import { IsValidMongooseObjectIdGuard } from "./guards/is-valid-objectId.guard";
 
 @Module({
     imports: [
@@ -14,6 +13,6 @@ import { IsValidMongooseObjectIdGuard } from "./guards/is-valid-objectId.guard";
         CommonModule
     ],
     controllers: [SiteController],
-    providers: [SiteService, IsValidMongooseObjectIdGuard],
+    providers: [SiteService],
 })
 export class SiteModule {}

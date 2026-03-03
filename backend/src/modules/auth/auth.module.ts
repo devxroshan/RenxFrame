@@ -5,9 +5,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { CommonModule } from 'src/common/common.module';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { WorkspaceModule } from '../workspace/workspace.module';
 
 @Module({
-  imports: [JwtModule, CommonModule, PassportModule.register({ session: false })],
+  imports: [
+    JwtModule,
+    CommonModule,
+    PassportModule.register({ session: false }),
+    WorkspaceModule
+  ],
   controllers: [AuthController],
   providers: [AuthService, GoogleStrategy],
   exports: [],

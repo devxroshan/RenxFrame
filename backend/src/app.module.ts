@@ -10,6 +10,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppConfigService } from './config/app-config.service';
 import { SiteModule } from './modules/sites/site.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { SiteModule } from './modules/sites/site.module';
     UserModule,
     PrismaModule,
     CommonModule,
-    SiteModule
+    SiteModule,
+    WorkspaceModule
   ],
   controllers: [AppController],
   providers: [

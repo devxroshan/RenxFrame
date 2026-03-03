@@ -17,8 +17,8 @@ export class SiteService {
   ): Promise<SuccessResponse<Site>> {
     try {
       const site = await this.siteModel.create({
-        ...createSiteDto,
         owner: psUserId,
+        ...createSiteDto
       });
       return {
         ok: true,
