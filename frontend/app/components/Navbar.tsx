@@ -10,8 +10,9 @@ import {
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useAppStore } from "../stores/app.store";
+import { useAppStore, Workspace } from "../stores/app.store";
 import { useUserStore } from "../stores/user.store";
+import { ELocalStorage } from "../config/local-storage.config";
 
 interface SidebarItem {
   name: string;
@@ -24,6 +25,7 @@ interface SidebarItem {
 const Navbar = () => {
   //   States
   const [activePath, setActivePath] = useState<string>("");
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>();
 
   //   Hooks
   const pathname = usePathname();
@@ -33,8 +35,23 @@ const Navbar = () => {
   const userStore = useUserStore();
 
   useEffect(() => {
+    if (appStore.workspaces.length > 0) {
+      if (!localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID)) {
+        localStorage.setItem(
+          ELocalStorage.SELECTED_WORKSPACE_ID,
+          appStore.workspaces[0]._id as string,
+        );
+      } else {
+        setCurrentWorkspace(
+          appStore.getWorkspaceById(
+            localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
+          ),
+        );
+      }
+    }
+
     setActivePath(pathname);
-  }, [pathname]);
+  }, [pathname, appStore.workspaces]);
 
   const navLinks: SidebarItem[] = [
     {
@@ -53,7 +70,7 @@ const Navbar = () => {
       activeIcon: (
         <LayoutTemplateIcon strokeWidth={2.2} className="w-5 h-5 text-white" />
       ),
-      action: () => appStore.setSiteListActive(true)
+      action: () => appStore.setSiteListActive(true),
     },
     {
       name: "Templates",
@@ -166,7 +183,12 @@ const Navbar = () => {
         <div className="flex flex-col w-full gap-1">
           {navLinks.map((item) => {
             return item.path == null ? (
-              <SidebarBtn key={item.name} item={item} activePath={activePath} onClick={item.action} />
+              <SidebarBtn
+                key={item.name}
+                item={item}
+                activePath={activePath}
+                onClick={item.action}
+              />
             ) : (
               <SidebarLink
                 key={item.name}
@@ -223,15 +245,17 @@ const Navbar = () => {
         {/* Current Workspace */}
         <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
           <Image
-            src={"/pic.jpg"}
-            alt="Profile Pic"
+            src={currentWorkspace?.logo || "/pic.jpg"}
+            alt="Workspace Logo"
             width={40}
             height={40}
             className="border border-primary-border rounded-full cursor-pointer"
           />
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{"NextGenZ Labs"}</span>
+            <span className="text-sm font-medium">
+              {currentWorkspace?.name}
+            </span>
             <span className="text-xs text-secondary-text">{"20 Members"}</span>
           </div>
         </div>
@@ -266,7 +290,7 @@ function SidebarLink({
 function SidebarBtn({
   item,
   activePath,
-  onClick
+  onClick,
 }: {
   item: SidebarItem;
   activePath: string;

@@ -15,11 +15,13 @@ import { APIErrorReseponse, APISuccessResponse } from "../config/api.config";
 import { useAppStore } from "../stores/app.store";
 
 import { ToastIcon } from "../config/types.config";
+import { ELocalStorage } from "../config/local-storage.config";
 
 export type NewProjectInfo = {
   name: string;
   subdomain: string;
   isWebsite: boolean;
+  workspace: string;
 };
 
 const CreateNewProject = () => {
@@ -28,10 +30,10 @@ const CreateNewProject = () => {
     name: "",
     subdomain: "",
     isWebsite: true,
+    workspace: "",
   });
 
-  // Hooks
-  const queryClient = useQueryClient();
+  // Hooks;
   const router = useRouter();
 
   // Stores
@@ -54,6 +56,12 @@ const CreateNewProject = () => {
       if (data.ok) {
         appStore.setCreateNewProject(false);
         appStore.setSites([data?.data]);
+        setNewProjectInfo({
+          name: "",
+          subdomain: "",
+          isWebsite: true,
+          workspace: "",
+        });
         router.replace(`?site_id=${data?.data?._id}`);
       }
     },
@@ -74,7 +82,12 @@ const CreateNewProject = () => {
       newProjectInfo.subdomain !== newProjectInfo.subdomain.toLowerCase()
     )
       return;
-    createNewProjectMutation.mutate(newProjectInfo);
+    createNewProjectMutation.mutate({
+      ...newProjectInfo,
+      workspace: localStorage.getItem(
+        ELocalStorage.SELECTED_WORKSPACE_ID,
+      ) as string,
+    });
   };
 
   return (

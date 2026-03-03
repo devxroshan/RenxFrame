@@ -1,36 +1,50 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 
 import { GetAllSiteAPI } from "../api/site.api";
+import { GetAllWorkspacesAPI } from "../api/workspace.api";
 import { useAppStore } from "../stores/app.store";
+import { ToastIcon } from "../config/types.config";
 
 const FetchData = ({ children }: { children: React.ReactNode }) => {
-    const router = useRouter()
-    const searchParams = useSearchParams()
+  const router = useRouter();
+  const appStore = useAppStore();
 
-    const appStore = useAppStore()
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["dashboard-bootstrap"],
+    queryFn: async () => {
+      const [sitesRes, workspacesRes] = await Promise.all([
+        GetAllSiteAPI(),
+        GetAllWorkspacesAPI(),
+      ]);
 
-    const siteQuery = useQuery({
-        queryKey: ['all-site'],
-        queryFn: GetAllSiteAPI
+      return {
+        sites: sitesRes.data,
+        workspaces: workspacesRes.data,
+      };
+    },
+    enabled: appStore.isAuth && appStore.isAuthChecked,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (data) {
+      appStore.setSites(data.sites ?? []);
+      appStore.setWorkspace(data.workspaces ?? []);
+    }
+  }, [data, appStore.isAuth, appStore.isAuthChecked, router]);
+
+  if (isError) {
+    appStore.addToast({
+      code: 'Fetching Error.',
+      msg: "Something went wrong. Try again later.",
+      iconType: ToastIcon.ERROR
     })
-
-    useEffect(() => {
-        const sites = siteQuery.data?.data
-        if(sites?.length > 0 && appStore.sites.length != sites?.length){
-            appStore.setSites(sites)
-        }else {
-            appStore.setSites([])
-            if(!searchParams.get('site_id'))
-                router.replace('/dashboard')
-        }
-
-        return () => appStore.setSites([])
-    }, [siteQuery.data])
-    
+  }
 
   return <>{children}</>;
 };

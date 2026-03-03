@@ -5,9 +5,6 @@ import { useEffect } from "react";
 
 // Stores
 import { useAppStore } from "../stores/app.store";
-import useWindowSize from "../hooks/useWindowSize";
-
-import NotAvailable from "./NotAvailable";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // Hooks
