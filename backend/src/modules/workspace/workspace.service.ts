@@ -1,8 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { InjectModel } from '@nestjs/mongoose';
-import { Workspace } from './schema/workspace.schema';
-import { Model } from 'mongoose';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { PrismaService } from 'src/common/database/prisma.service';
 

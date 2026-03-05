@@ -12,9 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/common/services/email.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AppConfigService } from 'src/config/app-config.service';
-import { InjectModel } from '@nestjs/mongoose';
-import { Workspace } from '../workspace/schema/workspace.schema';
-import { Model } from 'mongoose';
+
 
 @Injectable()
 export class AuthService {
@@ -23,7 +21,6 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
-    @InjectModel(Workspace.name) private workspaceModel: Model<Workspace>,
   ) {}
 
   async createUser(userDto: AuthCreateDto) {
@@ -58,10 +55,12 @@ export class AuthService {
       );
 
       // Creating default workspace
-      await this.workspaceModel.create({
-        owner: user.id,
-        name: `${user.name}'s Workspace`,
-      });
+      await this.prismaService.workspace.create({
+        data: {
+          ownerId: user.id,
+          name: user.name
+        }
+      })
 
       return {
         ok: true,
@@ -187,10 +186,12 @@ export class AuthService {
           },
         });
 
-        await this.workspaceModel.create({
-          owner: existingUser.id,
-          name: `${existingUser.name}'s Workspace`,
-        });
+        await this.prismaService.workspace.create({
+          data: {
+            ownerId: existingUser.id,
+            name:  `${existingUser.name}'s Workspace`
+          }
+        })
       }
     } catch (error) {
       throw error;
