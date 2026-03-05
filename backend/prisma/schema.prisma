@@ -22,6 +22,31 @@ model User {
   profilePicUrl String?
   isVerified Boolean  @default(false)
   isGoogleUser Boolean  @default(false)
+  sites Site[]
+  workspaces Workspace[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Site {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id])
+  workspaceId String
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  name String
+  isActive Boolean? @default(false)
+  subdomain String
+  isWebsite Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Workspace {
+  id String @id @default(uuid())
+  owner User @relation(fields: [ownerId], references: [id])
+  ownerId String
+  name String
+  logo String? @default("")
+  sites Site[]
 }

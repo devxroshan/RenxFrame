@@ -1,28 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Site } from './schema/site.schema';
-import { Model } from 'mongoose';
 import { CreateSiteDto } from './dto/create-site.dto';
 import { SuccessResponse } from 'src/type-declaration/response';
+import { PrismaService } from 'src/common/database/prisma.service';
+import { Site } from 'src/generated/prisma/client';
 
 @Injectable()
 export class SiteService {
   constructor(
-    @InjectModel(Site.name) private readonly siteModel: Model<Site>,
+    private readonly prismaService: PrismaService
   ) {}
 
   async create(
     createSiteDto: CreateSiteDto,
-    psUserId: string,
+    userId: string,
   ): Promise<SuccessResponse<Site>> {
     try {
-      const site = await this.siteModel.create({
-        owner: psUserId,
-        ...createSiteDto
+      const site = await this.prismaService.site.create({
+        data: {
+          ownerId: userId,
+          ...createSiteDto
+        }
       });
       return {
         ok: true,
-        msg: 'Site created successfully',
+        msg: 'Site created successfully.',
         data: site,
       };
     } catch (error) {
@@ -31,7 +32,11 @@ export class SiteService {
   }
 
   async getSite(id: string): Promise<SuccessResponse<Site>> {
-    const site: Site | null = await this.siteModel.findById(id);
+    const site: Site | null = await this.prismaService.site.findUnique({
+      where: {
+        id
+      }
+    })
 
     if (site == null) {
       throw new NotFoundException({
@@ -47,9 +52,11 @@ export class SiteService {
     };
   }
 
-  async getAllSite(owner: string): Promise<SuccessResponse<Site[]>> {
-    const site: Site[] = await this.siteModel.find({
-      owner,
+  async getAllSite(ownerId: string): Promise<SuccessResponse<Site[]>> {
+    const site: Site[] = await this.prismaService.site.findMany({
+      where: {
+        ownerId
+      }
     });
 
     if (site.length == 0) {

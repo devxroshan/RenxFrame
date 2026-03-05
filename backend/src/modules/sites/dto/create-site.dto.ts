@@ -16,5 +16,5 @@ export class CreateSiteDto {
 
     @IsNotEmpty()
     @IsString()
-    workspace: string;
+    workspaceId: string;
 }

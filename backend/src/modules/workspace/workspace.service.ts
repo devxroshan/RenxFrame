@@ -4,19 +4,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Workspace } from './schema/workspace.schema';
 import { Model } from 'mongoose';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { PrismaService } from 'src/common/database/prisma.service';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
-    @InjectModel(Workspace.name) private workspaceModel: Model<Workspace>,
+    private readonly prismaService: PrismaService
   ) {}
 
-  async create(createWorkspaceDto: CreateWorkspaceDto, psUserId: string) {
+  async create(createWorkspaceDto: CreateWorkspaceDto, userId: string) {
     try {
-      const workspace = await this.workspaceModel.create({
-        owner: psUserId,
-        ...createWorkspaceDto,
-      });
+      const workspace = await this.prismaService.workspace.create({
+        data: {
+          ownerId: userId,
+          ...createWorkspaceDto
+        }
+      })
 
       return {
         ok: true,
@@ -28,10 +31,12 @@ export class WorkspaceService {
     }
   }
 
-  async getAllWorkspace(psUserId: string) {
+  async getAllWorkspace(userId: string) {
     try {
-      const workspaces = await this.workspaceModel.find({
-        owner: psUserId,
+      const workspaces = await this.prismaService.workspace.findMany({
+        where: {
+          ownerId: userId
+        }
       });
 
       if (workspaces.length == 0) {
@@ -53,7 +58,11 @@ export class WorkspaceService {
 
   async getWorkspace(workspaceId: string) {
     try {
-      const workspace = await this.workspaceModel.findById(workspaceId);
+      const workspace = await this.prismaService.workspace.findUnique({
+        where: {
+          id: workspaceId
+        }
+      })
 
       if (!workspace) {
         throw new NotFoundException({
