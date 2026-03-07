@@ -39,15 +39,14 @@ const Navbar = () => {
       if (!localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID)) {
         localStorage.setItem(
           ELocalStorage.SELECTED_WORKSPACE_ID,
-          appStore.workspaces[0]._id as string,
-        );
-      } else {
-        setCurrentWorkspace(
-          appStore.getWorkspaceById(
-            localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
-          ),
+          appStore.workspaces[0].id as string,
         );
       }
+      setCurrentWorkspace(
+        appStore.getWorkspaceById(
+          localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
+        ),
+      );
     }
 
     setActivePath(pathname);
@@ -114,14 +113,22 @@ const Navbar = () => {
     <nav className="md:w-[7vw] lg:w-[25vw] xl:w-[20vw] bg-white h-screen flex">
       {/* Collapsed Sidebar */}
       <section className="w-full lg:hidden h-full border-r border-primary-border bg-secondary-bg flex flex-col items-center py-3 gap-2">
-        <Image
-          src={userStore.user?.profilePicUrl || "/user-pfp.png"}
-          alt="Profile Pic"
-          width={40}
-          height={40}
-          className="border border-primary-border rounded-full cursor-pointer"
-          unoptimized
-        />
+        {userStore.user?.profilePicUrl && (
+          <Image
+            src={userStore.user?.profilePicUrl as string}
+            alt="Profile Pic"
+            width={40}
+            height={40}
+            className="border border-primary-border rounded-full cursor-pointer"
+            unoptimized
+          />
+        )}
+
+        {!userStore.user?.profilePicUrl && (
+          <div className="bg-amber-600 rounded-full w-12 h-12 flex items-center justify-center text-2xl">
+            <span>{userStore.user?.name.at(0)}</span>
+          </div>
+        )}
 
         <div className="flex flex-col gap-0.5 items-center justify-start">
           {navLinks.map((item) => {
@@ -161,13 +168,22 @@ const Navbar = () => {
       <section className="hidden lg:flex flex-col gap-4 w-full h-full border-r border-primary-border bg-secondary-bg py-2 px-3">
         {/* Profile */}
         <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer">
-          <Image
-            src={userStore.user?.profilePicUrl || "/user-pfp.png"}
-            alt="Profile Pic"
-            width={40}
-            height={40}
-            className="border border-primary-border rounded-full cursor-pointer"
-          />
+          {userStore.user?.profilePicUrl && (
+            <Image
+              src={userStore.user?.profilePicUrl as string}
+              alt="Profile Pic"
+              width={40}
+              height={40}
+              className="border border-primary-border rounded-full cursor-pointer"
+              unoptimized
+            />
+          )}
+
+          {!userStore.user?.profilePicUrl && (
+            <div className="bg-amber-600 rounded-full w-12 h-12 flex items-center justify-center text-2xl">
+              <span>{userStore.user?.name.at(0)}</span>
+            </div>
+          )}
 
           <div className="flex flex-col">
             <span className="text-sm font-medium">
@@ -211,8 +227,8 @@ const Navbar = () => {
               {appStore.sites.length != 0 &&
                 appStore.sites.slice(0, 9).map((project) => (
                   <Link
-                    key={project._id}
-                    href={`?site_id=${project._id}`}
+                    key={project.id}
+                    href={`?site_id=${project.id}`}
                     className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
                   >
                     {project.name}
@@ -231,8 +247,8 @@ const Navbar = () => {
               {appStore.joinedWorkspaces.length != 0 &&
                 appStore.joinedWorkspaces.map((workspace) => (
                   <Link
-                    key={workspace._id}
-                    href={`?site_id=${workspace._id}`}
+                    key={workspace.id}
+                    href={`?site_id=${workspace.id}`}
                     className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
                   >
                     {workspace.name}
@@ -243,7 +259,10 @@ const Navbar = () => {
         </section>
 
         {/* Current Workspace */}
-        <div className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer" onClick={() => appStore.setWorkspaceActive(true)}>
+        <div
+          className="w-full transition-all duration-300 rounded-lg hover:bg-tertiary-bg flex items-center gap-3 px-3 py-2 cursor-pointer"
+          onClick={() => appStore.setWorkspaceActive(true)}
+        >
           <Image
             src={currentWorkspace?.logo || "/pic.jpg"}
             alt="Workspace Logo"

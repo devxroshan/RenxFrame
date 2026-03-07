@@ -1,28 +1,24 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
-import Button, { ButtonVariant } from "./Button";
-import CreateNewProject from "../windows/CreateNewProject";
-
-import { useAppStore, Site } from "../stores/app.store";
+import { Site } from "../stores/app.store";
+import Button, { ButtonVariant } from "./Button";;
 
 interface TopbarProps {
   currentSite: Site;
 }
 
 const Topbar = ({ currentSite }: TopbarProps) => {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
   const members = [
     { name: "John Doe", role: "Admin", avatar: "/pic.jpg" },
     { name: "Jane Smith", role: "Member", avatar: "/pic.jpg" },
     { name: "Alice Johnson", role: "Member", avatar: "/pic.jpg" },
     { name: "Bob Brown", role: "Member", avatar: "/pic.jpg" },
   ];
-
-  // States
-  const [isNewProject, setIsNewProject] = useState<boolean>(false);
-
 
   return (
     <main className="md:w-[93vw] lg:w-[75vw] xl:w-[80vw] h-[11vh] bg-secondary-bg border-b border-primary-border flex items-center justify-between px-2 py-1">
@@ -67,7 +63,7 @@ const Topbar = ({ currentSite }: TopbarProps) => {
         <Button
           variant={ButtonVariant.PRIMARY}
           text="Go to Editor"
-          onClick={() => setIsNewProject(true)}
+          onClick={() => router.push(`/editor?site_id=${searchParams.get('site_id')}`)}
           extendStyle="py-1.5"
         />
       </div>

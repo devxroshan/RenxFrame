@@ -24,7 +24,7 @@ export type NewProjectInfo = {
   workspace: string;
 };
 
-const CreateNewProject = () => {
+const CreateNewProjectWindow = () => {
   // States
   const [newProjectInfo, setNewProjectInfo] = useState<NewProjectInfo>({
     name: "",
@@ -205,4 +205,4 @@ const CreateNewProject = () => {
   );
 };
 
-export default CreateNewProject;
+export default CreateNewProjectWindow;

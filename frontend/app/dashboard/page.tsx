@@ -75,8 +75,8 @@ const Dashboard = () => {
                   <div className="w-full h-full min-h-0 overflow-y-auto no-scrollbar flex flex-col gap-1 items-start justify-start">
                     {appStore.sites.map((site: Site) => (
                       <div
-                        key={site._id}
-                        onClick={() => router.replace(`?site_id=${site._id}`)}
+                        key={site.id}
+                        onClick={() => router.replace(`?site_id=${site.id}`)}
                         className="p-3 rounded-xl border border-primary-border bg-secondary-bg hover:bg-tertiary-bg cursor-pointer transition-colors w-full flex items-center justify-start"
                       >
                         <div className="flex flex-col gap-0.5 items-start justify-center">

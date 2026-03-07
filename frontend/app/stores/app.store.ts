@@ -11,19 +11,20 @@ interface Toast {
 }
 
 export interface Site {
-  _id: string;
+  id: string;
   name: string;
   subdomain: string;
   owner: string;
   isOnline: boolean;
+  workspace: string;
 }
 
 export interface Workspace {
-  _id: string;
+  id: string;
   name: string;
   owner: string;
-  workspace: string;
   logo: string;
+  theme:'dark' | 'light'
 }
 
 type States = {
@@ -94,7 +95,7 @@ export const useAppStore = create<States & Actions>((set, get) => ({
       sites: [...state.sites, ...sites],
     })),
   getSiteById: (id): Site | undefined => {
-    return get().sites.find((site) => site._id === id);
+    return get().sites.find((site) => site.id === id);
   },
   setSiteListActive: (isActive) =>
     set((state) => ({
@@ -109,7 +110,7 @@ export const useAppStore = create<States & Actions>((set, get) => ({
       workspaces: [...state.workspaces, ...workspace],
     })),
   getWorkspaceById: (id: string): Workspace | undefined => {
-    return get().workspaces.find((workspace) => workspace._id == id);
+    return get().workspaces.find((workspace) => workspace.id == id);
   },
   setWorkspaceActive: (isActive) => set((state) => ({
     isWorkspaceActive: isActive

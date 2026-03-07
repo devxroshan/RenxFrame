@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 
 import { useAppStore } from "../stores/app.store";
 
-const SitesList = () => {
+const SitesListWindow = () => {
   const [searchProject, setSearchProject] = useState<string>("");
 
   const appStore = useAppStore();
@@ -50,8 +50,8 @@ const SitesList = () => {
               {filteredSites.length > 0 &&
                 filteredSites.map((stie) => (
                   <RecentProject
-                    key={stie._id}
-                    projectId={stie._id}
+                    key={stie.id}
+                    projectId={stie.id}
                     projectName={stie.name}
                     description={stie.subdomain}
                     isActive={stie.isOnline}
@@ -66,4 +66,4 @@ const SitesList = () => {
   );
 };
 
-export default SitesList;
+export default SitesListWindow;

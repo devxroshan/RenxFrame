@@ -21,7 +21,7 @@ const Input = ({variant, type, placeholder, value, fontStye, onChange, extendSty
     <>
       {variant === InputVariant.PRIMARY && <input 
         type={type || "text"} 
-        placeholder={placeholder || "Name"} 
+        placeholder={placeholder || ""} 
         className={`w-full px-2 py-1 font-${fontStye?fontStye:"normal"} rounded-lg border border-primary-border focus:outline-none focus:ring-2 focus:ring-primary-blue ${extendStyle || ''}`} 
         value={value ?? ""}
         onChange={onChange}
