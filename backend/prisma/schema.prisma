@@ -47,6 +47,13 @@ model Workspace {
   owner User @relation(fields: [ownerId], references: [id])
   ownerId String
   name String
+  description String
+  theme Theme? @default(dark)
   logo String? @default("")
   sites Site[]
+}
+
+enum Theme {
+  dark
+  light
 }

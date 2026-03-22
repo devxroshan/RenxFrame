@@ -58,7 +58,8 @@ export class AuthService {
       await this.prismaService.workspace.create({
         data: {
           ownerId: user.id,
-          name: user.name
+          name: user.name,
+          description: ""
         }
       })
 
@@ -189,7 +190,8 @@ export class AuthService {
         await this.prismaService.workspace.create({
           data: {
             ownerId: existingUser.id,
-            name:  `${existingUser.name}'s Workspace`
+            name:  `${existingUser.name}'s Workspace`,
+            description: ""
           }
         })
       }
