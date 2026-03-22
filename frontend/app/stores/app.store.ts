@@ -22,7 +22,8 @@ export interface Site {
 export interface Workspace {
   id: string;
   name: string;
-  owner: string;
+  ownerId: string;
+  description: string;
   logo: string;
   theme:'dark' | 'light'
 }
@@ -53,6 +54,8 @@ type Actions = {
   getWorkspaceById: (id: string) => Workspace | undefined;
   setWorkspaceActive: (isActive: boolean) => void;
 };
+
+
 
 export const useAppStore = create<States & Actions>((set, get) => ({
   toasts: [],

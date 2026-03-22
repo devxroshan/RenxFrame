@@ -1,152 +1,196 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+
+import { useAppStore, Workspace } from "../stores/app.store";
 
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
-
-import { useAppStore, Workspace } from "../stores/app.store";
 import { ELocalStorage } from "../config/local-storage.config";
 
-enum ESettings {
-  GENERAL = 'general',
-  EDITOR = 'editor',
-  DOMAIN = 'domain',
-  MEMBERS = 'members',
-  SECURITY = 'security',
+enum ETabs {
+  GENERAL = "general",
+  EDITOR = "editor",
+  SECURITY = "security",
+  DOMAIN = "domain",
+  MEMBERS_AND_ROLES = "members_&_roles",
 }
 
 const WorkspaceWindow = () => {
-  const [currentWorkspaceInfo, setWorkspaceInfo] = useState<
-    Omit<Workspace, "id">
-  >({
-    name: "",
-    logo: "",
-    theme: "dark",
-    owner: "",
-  });
-  const [currentActiveSetting, setActiveSetting] = useState<ESettings>(
-    ESettings.GENERAL,
+  const [currentActiveTab, setCurrentActiveTab] = useState<ETabs>(
+    ETabs.GENERAL,
   );
 
-  // Stores
   const appStore = useAppStore();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setWorkspaceInfo(
-        appStore.getWorkspaceById(
-          localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
-        ) as Omit<Workspace, "id">,
-      );
-    }
-    return () => {};
-  }, [appStore]);
-
-  const settings = [
-    { name: "General", action: () => setActiveSetting(ESettings.GENERAL) },
-    { name: "Members", action: () => setActiveSetting(ESettings.MEMBERS) },
-    { name: "Domain", action: () => setActiveSetting(ESettings.DOMAIN) },
-    { name: "Editor", action: () => setActiveSetting(ESettings.EDITOR) },
-    { name: "Security", action: () => setActiveSetting(ESettings.SECURITY) },
-  ];
+  const tabs = ["General", "Members & Roles", "Domain", "Editor", "Security"];
 
   return (
     <>
       {true && (
-        <main className="w-screen h-screen fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="md:w-screen md:h-screen bg-primary-bg flex flex-col px-3 py-2 gap-2">
-            <div className="px-2 py-2 w-full flex">
-              <span className="text-2xl font-bold">Workspace Settings</span>
-            </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          {/* Main Workspace Setting Window */}
+          <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
+            {/* Sidebar */}
+            <section className="w-[30%] lg:w-[25%] xl:w-[28%] h-screen lg:h-[85vh] flex flex-col items-start justify-start gap-5 py-4 px-4">
+              <span className="font-semibold text-xl">Workspace Settings</span>
 
-            <div className="flex items-center justify-center w-full h-full">
-              <div className="w-[25%] h-full flex flex-col gap-1 items-start justify-start">
-                {settings.map((setting) => (
-                  <button
-                    key={setting.name}
-                    className={`text-lg text-primary-text transition-all duration-300 cursor-pointer py-1 rounded-lg text-left px-4 w-full ${currentActiveSetting == setting.name.toLowerCase()?'bg-tertiary-bg text-white font-medium':'hover:font-medium hover:text-white hover:bg-tertiary-bg'}`}
-                    onClick={setting.action}
+              <div className="w-full flex flex-col items-start justify-center gap-2">
+                {tabs.map((tab) => (
+                  <div
+                    key={tab}
+                    className={`rounded-lg transition-all duration-300 cursor-pointer w-full py-1.5 ${currentActiveTab === (tab.toLowerCase() as ETabs) ? "text-white font-semibold bg-tertiary-bg px-4" : "hover:px-4 hover:bg-tertiary-bg hover:font-semibold text-primary-text hover:text-white"}`}
+                    onClick={() =>
+                      setCurrentActiveTab(tab.toLowerCase() as ETabs)
+                    }
                   >
-                    {setting.name}
-                  </button>
+                    <span>{tab}</span>
+                  </div>
                 ))}
               </div>
+            </section>
 
-              <div className="w-[75%] h-[90vh] min-h-0 overflow-y-auto no-scrollbar flex flex-col gap-4 items-start justify-start px-2 py-2">
-                {currentActiveSetting == ESettings.GENERAL && (
-                  <>
-                    {" "}
-                    <span className="text-2xl font-semibold">General</span>
-                    <div className="w-full flex flex-col gap-2 items-start justify-center">
-                      <span className="text-lg font-medium text-primary-text">
-                        Workspace name
-                      </span>
-                      <Input
-                        variant={InputVariant.PRIMARY}
-                        value={currentWorkspaceInfo?.name}
-                        onChange={(e) =>
-                          setWorkspaceInfo({
-                            ...currentWorkspaceInfo,
-                            name: e.target.value,
-                          })
-                        }
-                        placeholder="Workspace name"
-                      />
-                    </div>
-                    <div className="w-full flex flex-col gap-2 items-start justify-center">
-                      <span className="text-lg font-medium text-primary-text">
-                        Workspace description
-                      </span>
-                      <textarea
-                        className="bg-secondary-bg resize-none outline-none border border-primary-border rounded-lg px-2 py-2 focus:ring-2 transition-all duration-300 ring-primary-blue"
-                        rows={7}
-                        cols={40}
-                      ></textarea>
-                    </div>
-                    <div className="w-full flex flex-col gap-2 items-start justify-center">
-                      <span className="text-lg font-medium text-primary-text">
-                        Workspace logo
-                      </span>
-                      <span className="text-sm font-medium text-secondary-text">
-                        Upload an image or pick an emoji. This icon will appear
-                        in your sidebar.
-                      </span>
-
-                      <div className="w-full flex gap-2 items-center justify-start">
-                        <div className="w-34 h-34 rounded-lg border border-primary-border bg-tertiary-bg hover:bg-tertiary-bg-hover p-3">
-                          <Image
-                            src={"/pic.jpg"}
-                            alt="Workspace Logo"
-                            width={1440}
-                            height={1440}
-                            className="w-full h-full rounded-lg border border-primary-border"
-                          />
-                        </div>
-
-                        <div className="flex flex-col items-start justify-start h-full w-44 gap-2">
-                          <Button
-                            text={"Upload"}
-                            variant={ButtonVariant.PRIMARY}
-                            extendStyle="py-2"
-                            fontStyle="medium"
-                          />
-                          <Button
-                            text={"Set Emoji"}
-                            variant={ButtonVariant.SECONDARY_OUTLINE}
-                            extendStyle="py-2"
-                            fontStyle="medium"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </main>
+            {/* Settings Section */}
+            <section className="w-[70%] lg:w-[75%] xl:w-[72%] h-screen lg:h-[85vh] overflow-y-auto no-scrollbar py-4 px-4 gap-6 flex flex-col items-start justify-start">
+              {currentActiveTab === ETabs.GENERAL && <General />}
+            </section>
+          </main>
+        </div>
       )}
+    </>
+  );
+};
+
+const General = () => {
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>({
+    name: "",
+    logo: "",
+    description: "",
+    theme: "dark",
+    ownerId: "",
+    id: "",
+  });
+
+  const appStore = useAppStore();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Setting the current workspcae id to localstorage if there is not.
+      if (
+        !localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) &&
+        appStore.workspaces.length > 0
+      ) {
+        localStorage.setItem(
+          ELocalStorage.SELECTED_WORKSPACE_ID,
+          appStore?.workspaces[0]?.id,
+        );
+      }
+
+
+      const currentWorkspaceInfo: Workspace | undefined =
+        appStore.getWorkspaceById(
+          localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
+        );
+
+      if (currentWorkspaceInfo) setCurrentWorkspace(currentWorkspaceInfo);
+    }
+  }, [appStore]);
+
+  return (
+    <>
+      <span className="font-semibold text-2xl">General</span>
+
+      <div className="w-full flex flex-col gap-1 items-start justify-center">
+        <span className="text-primary-text font-medium">Workspace name</span>
+        <Input
+          variant={InputVariant.PRIMARY}
+          value={currentWorkspace.name}
+          onChange={(e) =>
+            setCurrentWorkspace({
+              ...currentWorkspace,
+              name: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      <div className="w-full flex flex-col gap-1 items-start justify-center">
+        <span className="text-primary-text font-medium">
+          Workspace description
+        </span>
+        <textarea
+          rows={10}
+          cols={50}
+          className="resize-none border border-primary-border rounded-lg outline-none focus:ring-2 focus:ring-primary-blue px-2 py-2"
+        ></textarea>
+      </div>
+
+      {/* Workspace Logo section */}
+      <div className="w-full flex flex-col gap-1 items-start justify-center">
+        <span className="text-primary-text font-medium">Workspace logo</span>
+        <span className="text-sm font-medium text-secondary-text">
+          Upload workspace logo or choose an emoji. This will appear on the
+          bottom of the sidebar.
+        </span>
+
+        <div className="w-full flex items-center justify-start gap-4">
+          <div className="w-32 h-32 rounded-lg border border-primary-border bg-tertiary-bg flex items-center justify-center">
+            <Image
+              src={"/pic.jpg"}
+              width={1000}
+              height={1000}
+              alt={"workspace logo"}
+              className="w-28 rounded-lg border border-primary-border"
+            />
+          </div>
+
+          <div className="flex flex-col items-center justify-start gap-2 w-44 h-full">
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              text="Upload"
+              extendStyle="py-2"
+              fontStyle="medium"
+            />
+            <Button
+              variant={ButtonVariant.SECONDARY_OUTLINE}
+              text="Set emoji"
+              extendStyle="py-2"
+              fontStyle="medium"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Theme */}
+
+      <div className="w-full flex flex-col items-start justify-center gap-1">
+        <span className="text-primary-text font-semibold">Workspace Theme</span>
+
+        <div className="w-full bg-tertiary-bg py-2 rounded-xl border border-primary-border gap-3 flex items-center justify-between px-2">
+          <button
+            className={`w-full h-full cursor-pointer rounded-lg ${currentWorkspace.theme == "dark" ? "text-white font-semibold bg-primary-bg py-2" : "text-primary-text bg-tertiary-bg border border-primary-border hover:bg-secondary-bg hover:text-white hover:border-none"} transition-all duration-300`}
+            onClick={() =>
+              setCurrentWorkspace({
+                ...currentWorkspace,
+                theme: "dark",
+              })
+            }
+          >
+            Dark
+          </button>
+          <button
+            className={`w-full h-full cursor-pointer rounded-lg ${currentWorkspace.theme == "light" ? "text-white font-semibold bg-primary-bg py-2" : "text-primary-text bg-tertiary-bg border border-primary-border hover:bg-secondary-bg hover:text-white hover:border-none"} transition-all duration-300`}
+            onClick={() =>
+              setCurrentWorkspace({
+                ...currentWorkspace,
+                theme: "light",
+              })
+            }
+          >
+            Light
+          </button>
+        </div>
+      </div>
     </>
   );
 };
