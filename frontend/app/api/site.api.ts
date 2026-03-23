@@ -10,12 +10,12 @@ export const GetSiteAPI = async (id:string) => {
     return res.data;
 }
 
-export const CreateSiteAPI = async ({name, subdomain, isWebsite, workspace}:{name: string, subdomain: string, isWebsite: boolean, workspace: string}) => {
+export const CreateSiteAPI = async ({name, subdomain, isWebsite, workspaceId}:{name: string, subdomain: string, isWebsite: boolean, workspaceId: string}) => {
     const res = await api.post(`/site`, {
         name,
         subdomain,
         isWebsite,
-        workspace
+        workspaceId
     })
     return res.data;
 }

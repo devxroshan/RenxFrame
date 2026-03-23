@@ -27,7 +27,7 @@ const WorkspaceWindow = () => {
 
   return (
     <>
-      {true && (
+      {false && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           {/* Main Workspace Setting Window */}
           <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
@@ -86,12 +86,10 @@ const General = () => {
         );
       }
 
-
       const currentWorkspaceInfo: Workspace | undefined =
         appStore.getWorkspaceById(
           localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
         );
-
       if (currentWorkspaceInfo) setCurrentWorkspace(currentWorkspaceInfo);
     }
   }, [appStore]);

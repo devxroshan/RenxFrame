@@ -21,7 +21,7 @@ export type NewProjectInfo = {
   name: string;
   subdomain: string;
   isWebsite: boolean;
-  workspace: string;
+  workspaceId: string;
 };
 
 const CreateNewProjectWindow = () => {
@@ -30,7 +30,7 @@ const CreateNewProjectWindow = () => {
     name: "",
     subdomain: "",
     isWebsite: true,
-    workspace: "",
+    workspaceId: "",
   });
 
   // Hooks;
@@ -60,9 +60,9 @@ const CreateNewProjectWindow = () => {
           name: "",
           subdomain: "",
           isWebsite: true,
-          workspace: "",
+          workspaceId: "",
         });
-        router.replace(`?site_id=${data?.data?._id}`);
+        router.replace(`?site_id=${data?.data?.id}`);
       }
     },
     onError: (err: APIErrorReseponse) => {
@@ -76,6 +76,15 @@ const CreateNewProjectWindow = () => {
 
   // Handlers
   const handleCreateNewProject = () => {
+    if (!localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID)) {
+      appStore.addToast({
+        msg: "No workspace selected.",
+        code: "NO WORKSPACE",
+        iconType: ToastIcon.ERROR,
+      });
+      return;
+    }
+
     if (
       !newProjectInfo.name ||
       !newProjectInfo.subdomain ||
@@ -84,7 +93,7 @@ const CreateNewProjectWindow = () => {
       return;
     createNewProjectMutation.mutate({
       ...newProjectInfo,
-      workspace: localStorage.getItem(
+      workspaceId: localStorage.getItem(
         ELocalStorage.SELECTED_WORKSPACE_ID,
       ) as string,
     });
