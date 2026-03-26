@@ -13,7 +13,12 @@ enum ETabs {
   EDITOR = "editor",
   SECURITY = "security",
   DOMAIN = "domain",
-  MEMBERS_AND_ROLES = "members_&_roles",
+  MEMBERS_AND_ROLES = "members_and_roles",
+}
+
+enum EMembersList {
+  WORKSPACE_MEMBERS = "workspace_members",
+  PROJECT_MEMBERS = "project_members",
 }
 
 const WorkspaceWindow = () => {
@@ -27,7 +32,7 @@ const WorkspaceWindow = () => {
 
   return (
     <>
-      {false && (
+      {true && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           {/* Main Workspace Setting Window */}
           <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
@@ -39,20 +44,39 @@ const WorkspaceWindow = () => {
                 {tabs.map((tab) => (
                   <div
                     key={tab}
-                    className={`rounded-lg transition-all duration-300 cursor-pointer w-full py-1.5 ${currentActiveTab === (tab.toLowerCase() as ETabs) ? "text-white font-semibold bg-tertiary-bg px-4" : "hover:px-4 hover:bg-tertiary-bg hover:font-semibold text-primary-text hover:text-white"}`}
+                    className={`rounded-lg transition-all duration-300 cursor-pointer w-full py-1.5 ${
+                      currentActiveTab ===
+                      (tab == "Members & Roles"
+                        ? ETabs.MEMBERS_AND_ROLES
+                        : (tab.toLowerCase() as ETabs))
+                        ? "text-white font-semibold bg-tertiary-bg px-4"
+                        : "hover:px-4 hover:bg-tertiary-bg hover:font-semibold text-primary-text hover:text-white"
+                    }`}
                     onClick={() =>
-                      setCurrentActiveTab(tab.toLowerCase() as ETabs)
+                      setCurrentActiveTab(
+                        tab == "Members & Roles"
+                          ? ETabs.MEMBERS_AND_ROLES
+                          : (tab.toLowerCase() as ETabs),
+                      )
                     }
                   >
                     <span>{tab}</span>
                   </div>
                 ))}
               </div>
+
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                text="Close"
+                extendStyle="py-2 mt-auto"
+                onClick={() => appStore.setWorkspaceActive(false)}
+              />
             </section>
 
             {/* Settings Section */}
             <section className="w-[70%] lg:w-[75%] xl:w-[72%] h-screen lg:h-[85vh] overflow-y-auto no-scrollbar py-4 px-4 gap-6 flex flex-col items-start justify-start">
               {currentActiveTab === ETabs.GENERAL && <General />}
+              {currentActiveTab === ETabs.MEMBERS_AND_ROLES && <MembersRoles />}
             </section>
           </main>
         </div>
@@ -187,6 +211,264 @@ const General = () => {
           >
             Light
           </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const MembersRoles = () => {
+  const [currentMembersList, setMembersList] = useState<EMembersList>(
+    EMembersList.WORKSPACE_MEMBERS,
+  );
+
+  const workspaceMembers = [
+    {
+      id: "1",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "2",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "3",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "4",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "5",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "6",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "7",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "8",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+    {
+      id: "9",
+      name: "Roshan Kewat",
+      email: "roshankewat9090@gmail.com",
+      role: "Owner",
+      active: "2h ago",
+    },
+  ];
+
+  return (
+    <>
+      <span className="font-semibold text-2xl">Members & Roles</span>
+
+      <div className="w-full flex flex-col gap-2">
+        <select
+          className="text-primary-text font-semibold w-fit px-1 py-1.5 bg-primary-bg border border-primary-border focus:ring-2 focus:ring-primary-blue outline-none rounded-lg"
+          onChange={(e) => setMembersList(e.target.value as EMembersList)}
+        >
+          <option value="workspace_members">Workspace Members</option>
+          <option value="project_members">Project Members</option>
+        </select>
+
+        {/* Workspace members only */}
+        {currentMembersList == EMembersList.WORKSPACE_MEMBERS && (
+          <div className="w-full rounded-2xl bg-secondary-bg border border-primary-border overflow-hidden">
+            <div className="w-full py-2 px-3 flex items-center justify-between border-b border-primary-border gap-2 bg-primary-bg">
+              <span className="font-semibold text-left text-primary-text w-full">
+                Name
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Email
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Role
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Active
+              </span>
+            </div>
+
+            <div className="w-full h-80 max-h-80 flex flex-col items-start justify-start overflow-y-auto no-scrollbar">
+              {workspaceMembers.map((member) => (
+                <div
+                  className="w-full last:border-none border-b border-primary-border py-3 px-2 bg-secondary-bg flex items-center justify-between gap-2"
+                  key={member.id}
+                >
+                  <span className="text-primary-text w-full text-left truncate flex items-center gap-2">
+                    <Image
+                      src={"/pic.jpg"}
+                      width={1000}
+                      height={1000}
+                      alt="User Pfp"
+                      className="w-8 rounded-full border border-primary-border"
+                    />
+                    {member.name}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.email}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.role}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.active}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Project members only */}
+        {currentMembersList == EMembersList.PROJECT_MEMBERS && (
+          <div className="w-full rounded-2xl bg-secondary-bg border border-primary-border overflow-hidden">
+            <div className="w-full py-2 px-3 flex items-center justify-between border-b border-primary-border gap-2 bg-primary-bg">
+              <span className="font-semibold text-left text-primary-text w-full">
+                Name
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Email
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Role
+              </span>
+              <span className="font-semibold text-left text-primary-text w-full">
+                Active
+              </span>
+            </div>
+
+            <div className="w-full h-80 max-h-80 flex flex-col items-start justify-start overflow-y-auto no-scrollbar">
+              {workspaceMembers.map((member) => (
+                <div
+                  className="w-full last:border-none border-b border-primary-border py-3 px-2 bg-secondary-bg flex items-center justify-between gap-2"
+                  key={member.id}
+                >
+                  <span className="text-primary-text w-full text-left truncate flex items-center gap-2">
+                    <Image
+                      src={"/pic.jpg"}
+                      width={1000}
+                      height={1000}
+                      alt="User Pfp"
+                      className="w-8 rounded-full border border-primary-border"
+                    />
+                    {member.name}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.email}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.role}
+                  </span>
+                  <span className="text-primary-text w-full text-left truncate">
+                    {member.active}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col items-start justify-start w-full gap-2">
+        <span className="font-semibold text-xl text-primary-text">
+          Create Role
+        </span>
+
+        <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-3 items-center justify-center lg:justify-start lg:items-start">
+          {/* List of roles */}
+          <div className="w-full xl:w-[55%] bg-secondary-bg h-80 rounded-xl border border-primary-border"></div>
+
+          {/* Create Roles */}
+          <div className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2">
+            <span className="font-semibold text-xl text-secondary-text">Permissions</span>
+
+            <div className="flex items-start justify-start w-full gap-6">
+              <div className="flex flex-col items-start justify-start gap-1">
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="editing" value={'editing'}/>
+                  <label htmlFor="editing" className="font-medium cursor-pointer">Editing</label>
+                </div>
+
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="edit_members" value={'edit_members'}/>
+                  <label htmlFor="edit_members" className="font-medium cursor-pointer">Edit Members</label>
+                </div>
+
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="billing" value={'billing'}/>
+                  <label htmlFor="billing" className="font-medium cursor-pointer">Billing</label>
+                </div>
+
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="roles_editing" value={'roles_editing'}/>
+                  <label htmlFor="roles_editing" className="font-medium cursor-pointer">Roles Editing</label>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start justify-start gap-1">
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="publishing" value={'publishing'}/>
+                  <label htmlFor="publishing" className="font-medium cursor-pointer">Publishing</label>
+                </div>
+
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="edit_domain" value={'edit_domain'}/>
+                  <label htmlFor="edit_domain" className="font-medium cursor-pointer">Edit Domain</label>
+                </div>
+
+                <div className="flex items-center justify-start gap-2">
+                  <input type="checkbox" id="delete_site" value={'delete_site'}/>
+                  <label htmlFor="delete_site" className="font-medium cursor-pointer">Delete Site</label>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2 items-center justify-start mt-4">
+              <div className="w-full rounded-xl bg-secondary-bg border border-primary-border py-1 px-1 items-center flex justify-between gap-2">
+                <button className="text-center w-full bg-primary-bg py-1 rounded-lg border border-primary-border cursor-pointer font-medium">
+                  In this project
+                </button>
+                <button className="text-center w-full bg-primary-bg py-1 rounded-lg border border-primary-border cursor-pointer font-medium">
+                  Workspace
+                </button>
+              </div>
+
+              <Input variant={InputVariant.PRIMARY} value="" onChange={() => {}} placeholder="Role name"/>
+
+              <Button variant={ButtonVariant.PRIMARY} text="Create Role" extendStyle="py-2" fontStyle="medium" />
+            </div>
+          </div>
         </div>
       </div>
     </>
