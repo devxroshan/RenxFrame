@@ -32,7 +32,7 @@ const WorkspaceWindow = () => {
 
   return (
     <>
-      {true && (
+      {appStore.isWorkspaceActive && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           {/* Main Workspace Setting Window */}
           <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
@@ -288,6 +288,14 @@ const MembersRoles = () => {
     },
   ];
 
+  const roles = [
+    { id: '1', roleName: "Admin", assigned: "4" },
+    { id: '2', roleName: "Developer", assigned: "4" },
+    { id: '3', roleName: "UI/UX", assigned: "4" },
+    { id: '4', roleName: "Manager", assigned: "4" },
+    { id: '5', roleName: "Frontend Developer", assigned: "2" }
+  ];
+
   return (
     <>
       <span className="font-semibold text-2xl">Members & Roles</span>
@@ -407,49 +415,128 @@ const MembersRoles = () => {
 
         <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-3 items-center justify-center lg:justify-start lg:items-start">
           {/* List of roles */}
-          <div className="w-full xl:w-[55%] bg-secondary-bg h-80 rounded-xl border border-primary-border"></div>
+          <div className="w-full flex flex-col items-center justify-start xl:w-[55%] bg-secondary-bg rounded-xl border border-primary-border overflow-hidden">
+            <div className="bg-primary-bg gap-2 border-b border-primary-border py-2 w-full flex items-center justify-between px-2">
+              <span className="text-primary-text font-semibold text-left truncate w-full">
+                Role
+              </span>
+              <span className="text-primary-text font-semibold text-left truncate w-full">
+                Assigned
+              </span>
+              <span className="text-primary-text font-semibold text-left truncate w-full"></span>
+            </div>
+
+            <div className="w-full h-80 max-h-80 flex flex-col overflow-y-auto no-scrollbar items-center justify-start">
+              {roles.map((role) => (
+                <div key={role.id} className="w-full last:border-none border-b border-primary-border py-2 px-2 flex gap-2 items-center justify-between hover:bg-tertiary-bg transition-all duration-300">
+                  <span className="w-full text-primary-text font-medium text-left truncate">
+                    {role.roleName}
+                  </span>
+                  <span className="w-full text-primary-text font-medium text-left truncate">
+                    {role.assigned + " members"}
+                  </span>
+                  <button className="w-full text-primary-text text-center outline-none border border-red-900 hover:bg-red-900 hover:text-white transition-all duration-300 cursor-pointer rounded-md active:scale-95">
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Create Roles */}
           <div className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2">
-            <span className="font-semibold text-xl text-secondary-text">Permissions</span>
+            <span className="font-semibold text-xl text-secondary-text">
+              Permissions
+            </span>
 
             <div className="flex items-start justify-start w-full gap-6">
               <div className="flex flex-col items-start justify-start gap-1">
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="editing" value={'editing'}/>
-                  <label htmlFor="editing" className="font-medium cursor-pointer">Editing</label>
+                  <input type="checkbox" id="editing" value={"editing"} />
+                  <label
+                    htmlFor="editing"
+                    className="font-medium cursor-pointer"
+                  >
+                    Editing
+                  </label>
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="edit_members" value={'edit_members'}/>
-                  <label htmlFor="edit_members" className="font-medium cursor-pointer">Edit Members</label>
+                  <input
+                    type="checkbox"
+                    id="edit_members"
+                    value={"edit_members"}
+                  />
+                  <label
+                    htmlFor="edit_members"
+                    className="font-medium cursor-pointer"
+                  >
+                    Edit Members
+                  </label>
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="billing" value={'billing'}/>
-                  <label htmlFor="billing" className="font-medium cursor-pointer">Billing</label>
+                  <input type="checkbox" id="billing" value={"billing"} />
+                  <label
+                    htmlFor="billing"
+                    className="font-medium cursor-pointer"
+                  >
+                    Billing
+                  </label>
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="roles_editing" value={'roles_editing'}/>
-                  <label htmlFor="roles_editing" className="font-medium cursor-pointer">Roles Editing</label>
+                  <input
+                    type="checkbox"
+                    id="roles_editing"
+                    value={"roles_editing"}
+                  />
+                  <label
+                    htmlFor="roles_editing"
+                    className="font-medium cursor-pointer"
+                  >
+                    Roles Editing
+                  </label>
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start gap-1">
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="publishing" value={'publishing'}/>
-                  <label htmlFor="publishing" className="font-medium cursor-pointer">Publishing</label>
+                  <input type="checkbox" id="publishing" value={"publishing"} />
+                  <label
+                    htmlFor="publishing"
+                    className="font-medium cursor-pointer"
+                  >
+                    Publishing
+                  </label>
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="edit_domain" value={'edit_domain'}/>
-                  <label htmlFor="edit_domain" className="font-medium cursor-pointer">Edit Domain</label>
+                  <input
+                    type="checkbox"
+                    id="edit_domain"
+                    value={"edit_domain"}
+                  />
+                  <label
+                    htmlFor="edit_domain"
+                    className="font-medium cursor-pointer"
+                  >
+                    Edit Domain
+                  </label>
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="delete_site" value={'delete_site'}/>
-                  <label htmlFor="delete_site" className="font-medium cursor-pointer">Delete Site</label>
+                  <input
+                    type="checkbox"
+                    id="delete_site"
+                    value={"delete_site"}
+                  />
+                  <label
+                    htmlFor="delete_site"
+                    className="font-medium cursor-pointer"
+                  >
+                    Delete Site
+                  </label>
                 </div>
               </div>
             </div>
@@ -464,9 +551,19 @@ const MembersRoles = () => {
                 </button>
               </div>
 
-              <Input variant={InputVariant.PRIMARY} value="" onChange={() => {}} placeholder="Role name"/>
+              <Input
+                variant={InputVariant.PRIMARY}
+                value=""
+                onChange={() => {}}
+                placeholder="Role name"
+              />
 
-              <Button variant={ButtonVariant.PRIMARY} text="Create Role" extendStyle="py-2" fontStyle="medium" />
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                text="Create Role"
+                extendStyle="py-2"
+                fontStyle="medium"
+              />
             </div>
           </div>
         </div>
