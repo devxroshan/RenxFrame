@@ -21,6 +21,20 @@ enum EMembersList {
   PROJECT_MEMBERS = "project_members",
 }
 
+interface CreateRole {
+  roleName: string;
+  isWorkspaceRole: boolean;
+  permission: {
+    canEdit: boolean;
+    canEditMembers: boolean;
+    canManageBilling: boolean;
+    canEditRoles: boolean;
+    canPublish: boolean;
+    canEditDomain: boolean;
+    canDeleteSite: boolean;
+  };
+}
+
 const WorkspaceWindow = () => {
   const [currentActiveTab, setCurrentActiveTab] = useState<ETabs>(
     ETabs.GENERAL,
@@ -221,6 +235,19 @@ const MembersRoles = () => {
   const [currentMembersList, setMembersList] = useState<EMembersList>(
     EMembersList.WORKSPACE_MEMBERS,
   );
+  const [newRoleInfo, setNewRoleInfo] = useState<CreateRole>({
+    roleName: "",
+    isWorkspaceRole: false,
+    permission: {
+      canEdit: false,
+      canEditMembers: false,
+      canManageBilling: false,
+      canEditRoles: false,
+      canPublish: false,
+      canEditDomain: false,
+      canDeleteSite: false,
+    },
+  });
 
   const workspaceMembers = [
     {
@@ -289,12 +316,24 @@ const MembersRoles = () => {
   ];
 
   const roles = [
-    { id: '1', roleName: "Admin", assigned: "4" },
-    { id: '2', roleName: "Developer", assigned: "4" },
-    { id: '3', roleName: "UI/UX", assigned: "4" },
-    { id: '4', roleName: "Manager", assigned: "4" },
-    { id: '5', roleName: "Frontend Developer", assigned: "2" }
+    { id: "1", roleName: "Admin", assigned: "4" },
+    { id: "2", roleName: "Developer", assigned: "4" },
+    { id: "3", roleName: "UI/UX", assigned: "4" },
+    { id: "4", roleName: "Manager", assigned: "4" },
+    { id: "5", roleName: "Frontend Developer", assigned: "2" },
   ];
+
+  const handlePermissionChange =
+    (key: keyof typeof newRoleInfo.permission) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setNewRoleInfo({
+        ...newRoleInfo,
+        permission: {
+          ...newRoleInfo.permission,
+          [key]: e.target.checked,
+        },
+      });
+    };
 
   return (
     <>
@@ -428,7 +467,10 @@ const MembersRoles = () => {
 
             <div className="w-full h-80 max-h-80 flex flex-col overflow-y-auto no-scrollbar items-center justify-start">
               {roles.map((role) => (
-                <div key={role.id} className="w-full last:border-none border-b border-primary-border py-2 px-2 flex gap-2 items-center justify-between hover:bg-tertiary-bg transition-all duration-300">
+                <div
+                  key={role.id}
+                  className="w-full last:border-none border-b border-primary-border py-2 px-2 flex gap-2 items-center justify-between hover:bg-tertiary-bg transition-all duration-300"
+                >
                   <span className="w-full text-primary-text font-medium text-left truncate">
                     {role.roleName}
                   </span>
@@ -444,7 +486,9 @@ const MembersRoles = () => {
           </div>
 
           {/* Create Roles */}
-          <div className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2">
+          <div className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2" onKeyDown={(e) => {
+            if(e.key == 'Enter') console.log(newRoleInfo)
+          }}>
             <span className="font-semibold text-xl text-secondary-text">
               Permissions
             </span>
@@ -452,7 +496,11 @@ const MembersRoles = () => {
             <div className="flex items-start justify-start w-full gap-6">
               <div className="flex flex-col items-start justify-start gap-1">
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="editing" value={"editing"} />
+                  <input
+                    type="checkbox"
+                    id="editing"
+                    onChange={handlePermissionChange("canEdit")}
+                  />
                   <label
                     htmlFor="editing"
                     className="font-medium cursor-pointer"
@@ -465,7 +513,7 @@ const MembersRoles = () => {
                   <input
                     type="checkbox"
                     id="edit_members"
-                    value={"edit_members"}
+                    onChange={handlePermissionChange("canEditMembers")}
                   />
                   <label
                     htmlFor="edit_members"
@@ -476,7 +524,7 @@ const MembersRoles = () => {
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="billing" value={"billing"} />
+                  <input type="checkbox" id="billing" onChange={handlePermissionChange("canManageBilling")}/>
                   <label
                     htmlFor="billing"
                     className="font-medium cursor-pointer"
@@ -489,7 +537,7 @@ const MembersRoles = () => {
                   <input
                     type="checkbox"
                     id="roles_editing"
-                    value={"roles_editing"}
+                    onChange={handlePermissionChange("canEditRoles")}
                   />
                   <label
                     htmlFor="roles_editing"
@@ -502,7 +550,7 @@ const MembersRoles = () => {
 
               <div className="flex flex-col items-start justify-start gap-1">
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="publishing" value={"publishing"} />
+                  <input type="checkbox" id="publishing" onChange={handlePermissionChange("canPublish")} />
                   <label
                     htmlFor="publishing"
                     className="font-medium cursor-pointer"
@@ -515,7 +563,7 @@ const MembersRoles = () => {
                   <input
                     type="checkbox"
                     id="edit_domain"
-                    value={"edit_domain"}
+                    onChange={handlePermissionChange("canEditDomain")}
                   />
                   <label
                     htmlFor="edit_domain"
@@ -529,7 +577,7 @@ const MembersRoles = () => {
                   <input
                     type="checkbox"
                     id="delete_site"
-                    value={"delete_site"}
+                    onChange={handlePermissionChange("canDeleteSite")}
                   />
                   <label
                     htmlFor="delete_site"
@@ -543,18 +591,39 @@ const MembersRoles = () => {
 
             <div className="w-full flex flex-col gap-2 items-center justify-start mt-4">
               <div className="w-full rounded-xl bg-secondary-bg border border-primary-border py-1 px-1 items-center flex justify-between gap-2">
-                <button className="text-center w-full bg-primary-bg py-1 rounded-lg border border-primary-border cursor-pointer font-medium">
+                <button
+                  className={`text-center w-full py-1 rounded-lg border-primary-border cursor-pointer transition-all duration-300 font-medium outline-none ${newRoleInfo.isWorkspaceRole ? "bg-tertiary-bg hover:bg-tertiary-bg-hover text-primary-text hover:text-white border-none" : "border bg-primary-bg text-white"}`}
+                  onClick={() =>
+                    setNewRoleInfo({
+                      ...newRoleInfo,
+                      isWorkspaceRole: false,
+                    })
+                  }
+                >
                   In this project
                 </button>
-                <button className="text-center w-full bg-primary-bg py-1 rounded-lg border border-primary-border cursor-pointer font-medium">
+                <button
+                  className={`text-center w-full py-1 rounded-lg border border-primary-border transition-all  duration-300 cursor-pointer font-medium outline-none ${!newRoleInfo.isWorkspaceRole ? "bg-tertiary-bg hover:bg-tertiary-bg-hover text-primary-text hover:text-white border-none" : "border bg-primary-bg text-white"}`}
+                  onClick={() =>
+                    setNewRoleInfo({
+                      ...newRoleInfo,
+                      isWorkspaceRole: true,
+                    })
+                  }
+                >
                   Workspace
                 </button>
               </div>
 
               <Input
                 variant={InputVariant.PRIMARY}
-                value=""
-                onChange={() => {}}
+                value={newRoleInfo.roleName}
+                onChange={(e) =>
+                  setNewRoleInfo({
+                    ...newRoleInfo,
+                    roleName: e.target.value,
+                  })
+                }
                 placeholder="Role name"
               />
 
@@ -563,6 +632,7 @@ const MembersRoles = () => {
                 text="Create Role"
                 extendStyle="py-2"
                 fontStyle="medium"
+                onClick={() => console.log(newRoleInfo)}
               />
             </div>
           </div>
