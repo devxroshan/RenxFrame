@@ -83,7 +83,10 @@ const WorkspaceWindow = () => {
                 variant={ButtonVariant.SECONDARY}
                 text="Close"
                 extendStyle="py-2 mt-auto"
-                onClick={() => appStore.setWorkspaceActive(false)}
+                onClick={() => {
+                  appStore.setWorkspaceActive(false)
+                  setCurrentActiveTab(ETabs.GENERAL)
+                }}
               />
             </section>
 
