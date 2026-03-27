@@ -36,6 +36,13 @@ interface CreateRole {
   };
 }
 
+interface Domain {
+  subdomain: string;
+  subdomainIP: string;
+  subdomainFor: string;
+  findDomain: string;
+}
+
 const WorkspaceWindow = () => {
   const [currentActiveTab, setCurrentActiveTab] = useState<ETabs>(
     ETabs.GENERAL,
@@ -47,7 +54,7 @@ const WorkspaceWindow = () => {
 
   return (
     <>
-      {true && (
+      {appStore.isWorkspaceActive && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           {/* Main Workspace Setting Window */}
           <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
@@ -659,6 +666,13 @@ const MembersRoles = () => {
 };
 
 const Domain = () => {
+  const [domainInfo, setDomainInfo] = useState<Domain>({
+    subdomainFor: "",
+    subdomainIP: "",
+    subdomain: "",
+    findDomain: "",
+  });
+
   const activeDomains = [
     {
       id: "1",
@@ -700,25 +714,25 @@ const Domain = () => {
         {
           id: "1",
           subdomain: "chats.codex.com",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
         {
           id: "2",
           subdomain: "history.codex.com",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
         {
           id: "3",
           subdomain: "activity.codex.com",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
         {
           id: "4",
           subdomain: "api.codex.com",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
       ],
@@ -730,30 +744,38 @@ const Domain = () => {
         {
           id: "1",
           subdomain: "chats.devxroshan.site",
-          recordType: "A",
+          recordType: "CNAME",
           ip: "192.168.1.0",
         },
         {
           id: "2",
           subdomain: "history.devxrosha.site",
-          recordType: "A",
+          recordType: "CNAME",
           ip: "192.168.1.0",
         },
         {
           id: "3",
           subdomain: "activity.devxroshan.site",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
         {
           id: "4",
           subdomain: "api.devxroshan.site",
-          recordType: "A",
+          recordType: "A Record",
           ip: "192.168.1.0",
         },
       ],
     },
   ];
+
+  useEffect(() => {
+    setDomainInfo({
+      ...domainInfo,
+      subdomainFor: activeDomains[0].domain
+    })
+  }, [])
+  
 
   return (
     <>
@@ -797,6 +819,51 @@ const Domain = () => {
           Subdomains
         </span>
 
+        <div className="w-full flex items-center justify-between gap-1">
+          <div className="w-[30%]">
+            <Input
+              variant={InputVariant.PRIMARY}
+              placeholder="Add subdomains..."
+              value={domainInfo.subdomain}
+              onChange={(e) =>
+                setDomainInfo({ ...domainInfo, subdomain: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="w-[28%]">
+            <Input
+              variant={InputVariant.PRIMARY}
+              placeholder="Subdomain IP"
+              value={domainInfo.subdomainIP}
+              onChange={(e) =>
+                setDomainInfo({ ...domainInfo, subdomainIP: e.target.value })
+              }
+            />
+          </div>
+
+          <select
+            className="w-[30%] bg-secondary-bg px-2 h-full border border-primary-border rounded-lg focus:ring-2 focus:ring-primary-blue outline-none text-primary-text"
+            onChange={(e) =>
+              setDomainInfo({ ...domainInfo, subdomainFor: e.target.value })
+            }
+          >
+            {activeDomains.map((activeDomain) => (
+              <option key={activeDomain.id} value={activeDomain.domain}>
+                {activeDomain.domain}
+              </option>
+            ))}
+          </select>
+
+          <div className="w-[12%]">
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              text="Add"
+              onClick={() => console.log(domainInfo)}
+            />
+          </div>
+        </div>
+
         <div className="w-full max-h-80 lg:max-h-60 h-fit flex flex-col items-center justify-start gap-2 overflow-y-auto no-scrollbar">
           {domains.map((domain) => (
             <div
@@ -813,10 +880,13 @@ const Domain = () => {
 
               <div className="w-full h-fit flex flex-col items-center justify-start">
                 {domain.subdomains.map((subdomain) => (
-                  <div key={subdomain.id} className="w-full bg-tertiary-bg border-b border-r border-l border-primary-border last:rounded-bl-xl last:rounded-br-xl py-3 px-2 flex items-center justify-between">
+                  <div
+                    key={subdomain.id}
+                    className="w-full bg-tertiary-bg border-b border-r border-l border-primary-border last:rounded-bl-xl last:rounded-br-xl py-3 px-2 flex items-center justify-between"
+                  >
                     <span className="font-medium">{subdomain.subdomain}</span>
                     <span className="text-sm text-primary-text font-medium">
-                      {subdomain.recordType} Record - {subdomain.ip}
+                      {subdomain.recordType} - {subdomain.ip}
                     </span>
                   </div>
                 ))}
@@ -827,8 +897,30 @@ const Domain = () => {
       </div>
 
       {/* See Available Sudomains and Domains */}
-      <div>
-        
+      <div className="w-full flex flex-col items-start justify-center gap-2">
+        <span className="text-primary-text text-lg font-semibold">
+          Find Domains
+        </span>
+
+        <Input
+          variant={InputVariant.PRIMARY}
+          value={domainInfo.findDomain}
+          placeholder="Find domains & subdomains..."
+          onChange={(e) =>
+            setDomainInfo({ ...domainInfo, findDomain: e.target.value })
+          }
+        />
+
+        <div className="w-full rounded-xl border border-primary-border px-2 py-2 min-h-24 bg-secondary-bg flex flex-col items-center justify-start">
+          <div className="w-full rounded-lg py-2 px-2 bg-tertiary-bg hover:bg-tertiary-bg-hover border border-primary-border flex items-center justify-between">
+            <span className="text-lg">devxroshan.site</span>
+
+            <div className="flex gap-2 items-center justify-between w-54">
+              <span className="font-medium text-lg">₹199/yr</span>
+              <Button variant={ButtonVariant.PRIMARY} text="Buy Now" />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
