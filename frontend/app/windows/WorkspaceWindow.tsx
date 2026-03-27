@@ -205,9 +205,9 @@ const General = () => {
       <div className="w-full flex flex-col items-start justify-center gap-1">
         <span className="text-primary-text font-semibold">Workspace Theme</span>
 
-        <div className="w-full bg-tertiary-bg py-2 rounded-xl border border-primary-border gap-3 flex items-center justify-between px-2">
+        <div className="w-full bg-secondary-bg py-2 rounded-xl border border-primary-border gap-3 flex items-center justify-between px-2">
           <button
-            className={`w-full h-full cursor-pointer rounded-lg ${currentWorkspace.theme == "dark" ? "text-white font-semibold bg-primary-bg py-2" : "text-primary-text bg-tertiary-bg border border-primary-border hover:bg-secondary-bg hover:text-white hover:border-none"} transition-all duration-300`}
+            className={`w-full h-full cursor-pointer rounded-lg py-2 outline-none ${currentWorkspace.theme == "dark" ? "text-white font-semibold bg-primary-bg" : "text-primary-text bg-tertiary-bg hover:bg-tertiary-bg-hover hover:text-white"} transition-all duration-300`}
             onClick={() =>
               setCurrentWorkspace({
                 ...currentWorkspace,
@@ -218,7 +218,7 @@ const General = () => {
             Dark
           </button>
           <button
-            className={`w-full h-full cursor-pointer rounded-lg ${currentWorkspace.theme == "light" ? "text-white font-semibold bg-primary-bg py-2" : "text-primary-text bg-tertiary-bg border border-primary-border hover:bg-secondary-bg hover:text-white hover:border-none"} transition-all duration-300`}
+            className={`w-full h-full cursor-pointer rounded-lg py-2 outline-none ${currentWorkspace.theme == "light" ? "text-white font-semibold bg-primary-bg" : "text-primary-text bg-tertiary-bg hover:bg-tertiary-bg-hover hover:text-white"} transition-all duration-300`}
             onClick={() =>
               setCurrentWorkspace({
                 ...currentWorkspace,
