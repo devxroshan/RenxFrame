@@ -7,6 +7,7 @@ import { useAppStore, Workspace } from "../stores/app.store";
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { ELocalStorage } from "../config/local-storage.config";
+import { Domine } from "next/font/google";
 
 enum ETabs {
   GENERAL = "general",
@@ -46,7 +47,7 @@ const WorkspaceWindow = () => {
 
   return (
     <>
-      {appStore.isWorkspaceActive && (
+      {true && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           {/* Main Workspace Setting Window */}
           <main className="w-screen h-screen lg:w-[90vw] xl:w-[70vw] lg:h-[85vh] lg:rounded-xl lg:border border-primary-border bg-primary-bg flex items-center justify-center">
@@ -84,8 +85,8 @@ const WorkspaceWindow = () => {
                 text="Close"
                 extendStyle="py-2 mt-auto"
                 onClick={() => {
-                  appStore.setWorkspaceActive(false)
-                  setCurrentActiveTab(ETabs.GENERAL)
+                  appStore.setWorkspaceActive(false);
+                  setCurrentActiveTab(ETabs.GENERAL);
                 }}
               />
             </section>
@@ -94,6 +95,7 @@ const WorkspaceWindow = () => {
             <section className="w-[70%] lg:w-[75%] xl:w-[72%] h-screen lg:h-[85vh] overflow-y-auto no-scrollbar py-4 px-4 gap-6 flex flex-col items-start justify-start">
               {currentActiveTab === ETabs.GENERAL && <General />}
               {currentActiveTab === ETabs.MEMBERS_AND_ROLES && <MembersRoles />}
+              {currentActiveTab === ETabs.DOMAIN && <Domain />}
             </section>
           </main>
         </div>
@@ -489,9 +491,12 @@ const MembersRoles = () => {
           </div>
 
           {/* Create Roles */}
-          <div className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2" onKeyDown={(e) => {
-            if(e.key == 'Enter') console.log(newRoleInfo)
-          }}>
+          <div
+            className="w-full xl:w-[45%]  flex flex-col items-start justify-start gap-2"
+            onKeyDown={(e) => {
+              if (e.key == "Enter") console.log(newRoleInfo);
+            }}
+          >
             <span className="font-semibold text-xl text-secondary-text">
               Permissions
             </span>
@@ -527,7 +532,11 @@ const MembersRoles = () => {
                 </div>
 
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="billing" onChange={handlePermissionChange("canManageBilling")}/>
+                  <input
+                    type="checkbox"
+                    id="billing"
+                    onChange={handlePermissionChange("canManageBilling")}
+                  />
                   <label
                     htmlFor="billing"
                     className="font-medium cursor-pointer"
@@ -553,7 +562,11 @@ const MembersRoles = () => {
 
               <div className="flex flex-col items-start justify-start gap-1">
                 <div className="flex items-center justify-start gap-2">
-                  <input type="checkbox" id="publishing" onChange={handlePermissionChange("canPublish")} />
+                  <input
+                    type="checkbox"
+                    id="publishing"
+                    onChange={handlePermissionChange("canPublish")}
+                  />
                   <label
                     htmlFor="publishing"
                     className="font-medium cursor-pointer"
@@ -640,6 +653,182 @@ const MembersRoles = () => {
             </div>
           </div>
         </div>
+      </div>
+    </>
+  );
+};
+
+const Domain = () => {
+  const activeDomains = [
+    {
+      id: "1",
+      domain: "codex.com",
+      resitry: "CloudFlare",
+      expiresIn: "20 days",
+    },
+    {
+      id: "2",
+      domain: "devxroshan.site",
+      resitry: "CloudFlare",
+      expiresIn: "20 days",
+    },
+    {
+      id: "3",
+      domain: "brandsip.site",
+      resitry: "CloudFlare",
+      expiresIn: "20 days",
+    },
+    {
+      id: "4",
+      domain: "redagnigames.com",
+      resitry: "CloudFlare",
+      expiresIn: "20 days",
+    },
+    {
+      id: "5",
+      domain: "redagniproductions.com",
+      resitry: "CloudFlare",
+      expiresIn: "20 days",
+    },
+  ];
+
+  const domains = [
+    {
+      id: "1",
+      domain: "codex.com",
+      subdomains: [
+        {
+          id: "1",
+          subdomain: "chats.codex.com",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "2",
+          subdomain: "history.codex.com",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "3",
+          subdomain: "activity.codex.com",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "4",
+          subdomain: "api.codex.com",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+      ],
+    },
+    {
+      id: "2",
+      domain: "devxroshan.site",
+      subdomains: [
+        {
+          id: "1",
+          subdomain: "chats.devxroshan.site",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "2",
+          subdomain: "history.devxrosha.site",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "3",
+          subdomain: "activity.devxroshan.site",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "4",
+          subdomain: "api.devxroshan.site",
+          recordType: "A",
+          ip: "192.168.1.0",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <>
+      <span className="font-semibold text-2xl">Domain</span>
+
+      {/* Active Domains */}
+      <div className="w-full flex flex-col items-start justify-center gap-2">
+        <span className="text-primary-text text-lg font-semibold">
+          Active Domains
+        </span>
+        <div className="w-full flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory">
+          {activeDomains.map((domain) => (
+            <div
+              key={domain.id}
+              className="min-w-60 h-fit shrink-0 snap-start bg-secondary-bg hover:bg-tertiary-bg rounded-xl border border-primary-border shadow-sm hover:shadow-md transition-all duration-300 px-4 py-2 flex flex-col gap-2"
+            >
+              <div className="flex items-center justify-between w-full gap-3">
+                <span className="text-lg font-semibold">{domain.domain}</span>
+
+                <span className="px-3 py-1 bg-primary-blue rounded-full text-xs font-medium">
+                  Active
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-1 items-start justify-center">
+                <span className="text-sm text-secondary-text font-medium">
+                  Resitry: {domain.resitry}
+                </span>
+                <span className="text-sm text-secondary-text font-medium">
+                  Expiring In: {domain.expiresIn}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Subdomains */}
+      <div className="w-full flex flex-col items-start justify-center gap-2">
+        <span className="text-primary-text text-lg font-semibold">
+          Subdomains
+        </span>
+
+        <div className="w-full max-h-80 lg:max-h-60 h-fit flex flex-col items-center justify-start gap-2 overflow-y-auto no-scrollbar">
+          {domains.map((domain) => (
+            <div
+              key={domain.id}
+              className="w-full max-h-80 lg:max-h-60 h-fit flex flex-col items-center justify-start"
+            >
+              <div className="w-full bg-secondary-bg rounded-tl-xl rounded-tr-xl border border-primary-border h-12 flex px-4 py-2 items-center justify-between">
+                <span className="font-semibold">{domain.domain}</span>
+
+                <span className="text-sm font-medium text-secondary-text">
+                  {domain.subdomains.length} Records
+                </span>
+              </div>
+
+              <div className="w-full h-fit flex flex-col items-center justify-start">
+                {domain.subdomains.map((subdomain) => (
+                  <div key={subdomain.id} className="w-full bg-tertiary-bg border-b border-r border-l border-primary-border last:rounded-bl-xl last:rounded-br-xl py-3 px-2 flex items-center justify-between">
+                    <span className="font-medium">{subdomain.subdomain}</span>
+                    <span className="text-sm text-primary-text font-medium">
+                      {subdomain.recordType} Record - {subdomain.ip}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* See Available Sudomains and Domains */}
+      <div>
+        
       </div>
     </>
   );
