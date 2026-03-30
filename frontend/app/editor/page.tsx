@@ -20,6 +20,8 @@ enum ScreenSize {
 
 interface EditorProps {
   currentScreenSize: ScreenSize;
+  zoom: number;
+  setZoom: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const Editor = () => {
@@ -27,6 +29,7 @@ const Editor = () => {
   const [currentScreenSize, setCurrentScreenSize] = useState<ScreenSize>(
     ScreenSize.DESKTOP,
   );
+  const [zoom, setZoom] = useState<number>(0.8);
 
   const searchParams = useSearchParams();
 
@@ -91,12 +94,22 @@ const Editor = () => {
               <Divider strokeWidth="2px" />
 
               <div className="flex items-center gap-2">
-                <select className="outline-none font-medium text-primary-text border-none px-2 py-1 text-sm">
-                  <option value="100">100%</option>
-                  <option value="75">75%</option>
+                <select
+                  className="outline-none font-medium text-primary-text border-none px-2 py-1 text-sm"
+                  onChange={(e) => setZoom(Number(e.target.value) / 100)}
+                  defaultValue={80}
+                >
+                  <option value="10">10%</option>
                   <option value="50">50%</option>
-                  <option value="25">25%</option>
-                  <option value="15%">15%</option>
+                  <option value="60">60%</option>
+                  <option value="70">70%</option>
+                  <option value="80">80%</option>
+                  <option value="90">90%</option>
+                  <option value="100">100%</option>
+                  <option value="150">150%</option>
+                  <option value="200">200%</option>
+                  <option value="250">250%</option>
+                  <option value="300">300%</option>
                 </select>
               </div>
             </div>
@@ -131,7 +144,11 @@ const Editor = () => {
 
         <section className="w-full h-[93%] flex items-center justify-center">
           <Hierarchy />
-          <MainEditor currentScreenSize={currentScreenSize} />
+          <MainEditor
+            currentScreenSize={currentScreenSize}
+            zoom={zoom}
+            setZoom={setZoom}
+          />
           <Inspector />
         </section>
       </main>
@@ -156,9 +173,8 @@ const Hierarchy = () => {
   );
 };
 
-const MainEditor = ({ currentScreenSize }: EditorProps) => {
+const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
   // States
-  const [zoom, setZoom] = useState<number>(0.8); // zoom * 100 = zoom percentage
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -184,14 +200,14 @@ const MainEditor = ({ currentScreenSize }: EditorProps) => {
 
   useEffect(() => {
     if (mainEditorRef.current) {
-      mainEditorRef.current.addEventListener("wheel", handleMouseWheel, {
+      mainEditorRef.current?.addEventListener("wheel", handleMouseWheel, {
         passive: false,
       });
     }
-    
+
     return () => {
       if (mainEditorRef.current) {
-        mainEditorRef.current.removeEventListener("wheel", handleMouseWheel);
+        mainEditorRef.current?.removeEventListener("wheel", handleMouseWheel);
       }
     };
   }, []);
@@ -220,6 +236,7 @@ const MainEditor = ({ currentScreenSize }: EditorProps) => {
         onMouseLeave={() => setIsDragging(false)}
         className={`w-[60%] h-full bg-secondary-bg overflow-hidden flex items-center justify-center`}
       >
+        <div className="w-[60%] h-[93%] absolute z-10"></div>
         <div
           style={{
             transform: `scale(${zoom}) translate(${pan.x}px, ${pan.y}px)`,
@@ -227,9 +244,12 @@ const MainEditor = ({ currentScreenSize }: EditorProps) => {
           }}
           className={`h-full w-full flex items-center justify-center transition-transform duration-75 ease-in-out`}
         >
-          <div style={{
-            width: currentScreenSize
-          }} className="flex flex-col items-start justify-center gap-1 h-142">
+          <div
+            style={{
+              width: currentScreenSize,
+            }}
+            className="flex flex-col items-start justify-center gap-1 h-142"
+          >
             <span className="font-medium text-primary-text">
               {currentScreenSize}
             </span>
