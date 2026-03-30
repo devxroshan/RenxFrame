@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
+// Icons
+import { ChevronDown } from "lucide-react";
+
 import { useAppStore, Workspace } from "../stores/app.store";
 
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { ELocalStorage } from "../config/local-storage.config";
-import { Domine } from "next/font/google";
 
 enum ETabs {
   GENERAL = "general",
@@ -672,6 +674,9 @@ const Domain = () => {
     subdomain: "",
     findDomain: "",
   });
+  const [currentActiveSubdomainList, setActiveSubdomainList] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const activeDomains = [
     {
@@ -772,10 +777,17 @@ const Domain = () => {
   useEffect(() => {
     setDomainInfo({
       ...domainInfo,
-      subdomainFor: activeDomains[0].domain
-    })
-  }, [])
-  
+      subdomainFor: activeDomains[0].domain,
+    });
+
+    setActiveSubdomainList(() => {
+      const newList: { [key: string]: boolean } = {};
+      activeDomains.forEach((domain) => {
+        newList[domain.domain] = true;
+      });
+      return newList;
+    });
+  }, []);
 
   return (
     <>
@@ -870,7 +882,15 @@ const Domain = () => {
               key={domain.id}
               className="w-full max-h-80 lg:max-h-60 h-fit flex flex-col items-center justify-start"
             >
-              <div className="w-full bg-secondary-bg rounded-tl-xl rounded-tr-xl border border-primary-border h-12 flex px-4 py-2 items-center justify-between">
+              <div className={`w-full bg-secondary-bg ${currentActiveSubdomainList[domain.domain]?"rounded-tl-xl rounded-tr-xl":"rounded-xl"} border border-primary-border h-12 flex px-4 py-2 items-center justify-between`}>
+                <ChevronDown
+                  className={`text-primary-text ${currentActiveSubdomainList[domain.domain] ? "rotate-180" : ""} active:scale-75 transition-all duration-300 cursor-pointer`}
+                  onClick={() => setActiveSubdomainList((prev) => ({
+                    ...prev,
+                    [domain.domain]: !prev[domain.domain],
+                  }))}
+                />
+
                 <span className="font-semibold">{domain.domain}</span>
 
                 <span className="text-sm font-medium text-secondary-text">
@@ -878,7 +898,7 @@ const Domain = () => {
                 </span>
               </div>
 
-              <div className="w-full h-fit flex flex-col items-center justify-start">
+              {currentActiveSubdomainList[domain.domain] && <div className="w-full h-fit flex flex-col items-center justify-start">
                 {domain.subdomains.map((subdomain) => (
                   <div
                     key={subdomain.id}
@@ -890,7 +910,7 @@ const Domain = () => {
                     </span>
                   </div>
                 ))}
-              </div>
+              </div>}
             </div>
           ))}
         </div>
