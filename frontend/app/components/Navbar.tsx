@@ -229,7 +229,7 @@ const Navbar = () => {
                   <Link
                     key={project.id}
                     href={`?site_id=${project.id}`}
-                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
+                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white text-sm"
                   >
                     {project.name}
                   </Link>
@@ -249,7 +249,7 @@ const Navbar = () => {
                   <Link
                     key={workspace.id}
                     href={`?site_id=${workspace.id}`}
-                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white"
+                    className="px-2 py-1.5 rounded-md hover:bg-tertiary-bg w-full cursor-pointer font-medium transition-all duration-300 text-primary-text hover:text-white text-sm"
                   >
                     {workspace.name}
                   </Link>
@@ -272,7 +272,7 @@ const Navbar = () => {
           />
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium">
+            <span className="text-xs font-medium">
               {currentWorkspace?.name}
             </span>
             <span className="text-xs text-secondary-text">{"20 Members"}</span>

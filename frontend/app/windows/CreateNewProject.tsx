@@ -190,7 +190,7 @@ const CreateNewProjectWindow = () => {
                     <Button
                       variant={ButtonVariant.PRIMARY}
                       text="Create"
-                      extendStyle="py-2 text-lg"
+                      extendStyle="py-2 text-md"
                       fontStyle="medium"
                       isLoading={createNewProjectMutation.isPending}
                       onLoadingText="Creating..."
@@ -199,7 +199,7 @@ const CreateNewProjectWindow = () => {
                     <Button
                       variant={ButtonVariant.SECONDARY}
                       text="Cancel"
-                      extendStyle="py-2 text-lg"
+                      extendStyle="py-2 text-md"
                       fontStyle="medium"
                       onClick={() => appStore.setCreateNewProject(false)}
                     />
