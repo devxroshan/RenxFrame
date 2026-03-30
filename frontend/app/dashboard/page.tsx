@@ -72,12 +72,12 @@ const Dashboard = () => {
                   <h2 className="text-lg font-semibold text-primary-text mb-4">
                     Recent Projects
                   </h2>
-                  <div className="w-full h-full min-h-0 overflow-y-auto no-scrollbar flex flex-col gap-1 items-start justify-start">
+                  <div className="w-full h-fit max-h-64 overflow-y-auto no-scrollbar flex flex-col gap-1 items-start justify-start">
                     {appStore.sites.map((site: Site) => (
                       <div
                         key={site.id}
                         onClick={() => router.replace(`?site_id=${site.id}`)}
-                        className="p-3 rounded-xl border border-primary-border bg-secondary-bg hover:bg-tertiary-bg cursor-pointer transition-colors w-full flex items-center justify-start"
+                        className="px-3 py-2 rounded-xl border border-primary-border bg-secondary-bg hover:bg-tertiary-bg cursor-pointer transition-colors w-full flex items-center justify-start"
                       >
                         <div className="flex flex-col gap-0.5 items-start justify-center">
                           <span className="font-medium text-primary-text truncate">
