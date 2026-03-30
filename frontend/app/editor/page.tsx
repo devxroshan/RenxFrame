@@ -188,7 +188,7 @@ const MainEditor = ({ currentScreenSize }: EditorProps) => {
         passive: false,
       });
     }
-
+    
     return () => {
       if (mainEditorRef.current) {
         mainEditorRef.current.removeEventListener("wheel", handleMouseWheel);
