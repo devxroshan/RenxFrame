@@ -772,6 +772,36 @@ const Domain = () => {
         },
       ],
     },
+    {
+      id: "3",
+      domain: "brandsip.site",
+      subdomains: [
+        {
+          id: "1",
+          subdomain: "chats.brandsip.site",
+          recordType: "CNAME",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "2",
+          subdomain: "history.brandsip.site",
+          recordType: "CNAME",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "3",
+          subdomain: "activity.brandsip.site",
+          recordType: "A Record",
+          ip: "192.168.1.0",
+        },
+        {
+          id: "4",
+          subdomain: "api.brandsip.site",
+          recordType: "A Record",
+          ip: "192.168.1.0",
+        },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -783,7 +813,7 @@ const Domain = () => {
     setActiveSubdomainList(() => {
       const newList: { [key: string]: boolean } = {};
       activeDomains.forEach((domain) => {
-        newList[domain.domain] = true;
+        newList[domain.domain] = false;
       });
       return newList;
     });
