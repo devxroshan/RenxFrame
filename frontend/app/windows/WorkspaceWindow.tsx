@@ -52,7 +52,7 @@ const WorkspaceWindow = () => {
 
   const appStore = useAppStore();
 
-  const tabs = ["General", "Members & Roles", "Domain", "Editor", "Security"];
+  const tabs = ["General", "Members & Roles", "Domain", "Editor"];
 
   return (
     <>
@@ -491,7 +491,7 @@ const MembersRoles = () => {
                   <span className="w-full text-primary-text font-medium text-left truncate">
                     {role.assigned + " members"}
                   </span>
-                  <button className="w-full text-primary-text text-center outline-none border border-red-900 hover:bg-red-900 hover:text-white transition-all duration-300 cursor-pointer rounded-md active:scale-95">
+                  <button className="w-full text-red-900 text-center outline-none border border-red-900 hover:bg-red-900 hover:text-white transition-all duration-300 cursor-pointer rounded-md active:scale-95">
                     Delete
                   </button>
                 </div>
