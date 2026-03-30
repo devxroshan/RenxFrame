@@ -78,15 +78,15 @@ const Editor = () => {
 
               <div className="flex items-center gap-2">
                 <Monitor
-                  className="hover:bg-secondary-text/10 text-secondary-text transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8"
+                  className={`${currentScreenSize === ScreenSize.DESKTOP ? "bg-primary-blue text-white" : "hover:bg-secondary-text/10 text-secondary-text"} transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8`}
                   onClick={() => setCurrentScreenSize(ScreenSize.DESKTOP)}
                 />
                 <Tablet
-                  className="hover:bg-secondary-text/10 text-secondary-text transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8"
+                  className={`${currentScreenSize === ScreenSize.TABLET ? "bg-primary-blue text-white" : "hover:bg-secondary-text/10 text-secondary-text"} transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8`}
                   onClick={() => setCurrentScreenSize(ScreenSize.TABLET)}
                 />
                 <Smartphone
-                  className="hover:bg-secondary-text/10 text-secondary-text transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8"
+                  className={`${currentScreenSize === ScreenSize.MOBILE ? "bg-primary-blue text-white" : "hover:bg-secondary-text/10 text-secondary-text"} transition-all duration-300 cursor-pointer rounded-lg p-1.5 w-8 h-8`}
                   onClick={() => setCurrentScreenSize(ScreenSize.MOBILE)}
                 />
               </div>
@@ -120,14 +120,14 @@ const Editor = () => {
               <Button
                 variant={ButtonVariant.SECONDARY}
                 text="Preview"
-                extendStyle="px-4"
+                extendStyle="px-4 text-sm"
                 fontStyle="medium"
               />
 
               <Button
                 variant={ButtonVariant.PRIMARY}
                 text="Publish"
-                extendStyle="px-4"
+                extendStyle="px-4 text-sm"
                 fontStyle="medium"
               />
 
@@ -136,7 +136,7 @@ const Editor = () => {
                 width={1000}
                 height={1000}
                 alt="User Pfp"
-                className="rounded-full w-10 h-10 border border-primary-border"
+                className="rounded-full w-8 h-8 border border-primary-border"
               />
             </div>
           </div>
