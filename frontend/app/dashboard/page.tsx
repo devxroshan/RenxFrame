@@ -33,7 +33,7 @@ const Dashboard = () => {
       <main className="w-screen h-screen flex items-start justify-start">
         <Navbar />
         {currentProject && <Topbar currentSite={currentProject} />}
-        {currentProject && <FloatingButton/>}
+        {currentProject && <FloatingButton position="bottom-right" onClick={() => appStore.setCreateNewProject(true)} />}
 
         {!currentProject && (
           <div

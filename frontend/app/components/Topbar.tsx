@@ -59,12 +59,13 @@ const Topbar = ({ currentSite }: TopbarProps) => {
         </div>
       </div>
 
-      <div className="w-32">
+      <div className="w-28">
         <Button
           variant={ButtonVariant.PRIMARY}
           text="Go to Editor"
           onClick={() => router.push(`/editor?site_id=${searchParams.get('site_id')}`)}
-          extendStyle="py-1.5"
+          extendStyle="py-1.5 text-sm"
+          fontStyle="medium"
         />
       </div>
     </main>

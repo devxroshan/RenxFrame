@@ -2,15 +2,13 @@
 import React from 'react'
 import {Plus} from 'lucide-react'
 
-import { useAppStore } from '../stores/app.store';
 
 interface FloatingButtonProps {
-    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+    onClick: () => void
 }
 
-const FloatingButton: React.FC<FloatingButtonProps> = ({ position = 'bottom-right' }) => {
-    const appStore = useAppStore()
-
+const FloatingButton: React.FC<FloatingButtonProps> = ({ position, onClick}) => {
     const positionClasses = {
         'top-left': 'top-4 left-4',
         'top-right': 'top-4 right-4',
@@ -20,8 +18,8 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ position = 'bottom-righ
 
     return (
         <button 
-            className={`fixed ${positionClasses[position]} bg-primary-blue hover:bg-primary-blue-hover text-white hover:text-gray-400 active:scale-95 rounded-xl p-2 shadow-lg transition-all duration-300 cursor-pointer outline-none`}
-            onClick={() => appStore.setCreateNewProject(true)}
+            className={`fixed ${positionClasses[position]} bg-primary-blue hover:bg-primary-blue-hover text-white hover:text-gray-400 active:scale-95 rounded-xl p-1.5 shadow-lg transition-all duration-300 cursor-pointer outline-none`}
+            onClick={onClick}
         >
             <Plus className='w-8 h-8'/>
         </button>
