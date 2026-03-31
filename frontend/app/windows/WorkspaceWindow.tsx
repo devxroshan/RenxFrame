@@ -383,7 +383,7 @@ const MembersRoles = () => {
             <div className="w-full h-80 max-h-80 flex flex-col items-start justify-start overflow-y-auto no-scrollbar">
               {workspaceMembers.map((member) => (
                 <div
-                  className="w-full last:border-none border-b border-primary-border py-3 px-2 bg-secondary-bg flex items-center justify-between gap-2"
+                  className="w-full last:border-none border-b border-primary-border py-2 px-2 bg-secondary-bg flex items-center justify-between gap-2"
                   key={member.id}
                 >
                   <span className="text-primary-text w-full text-left truncate flex items-center gap-2">
@@ -432,7 +432,7 @@ const MembersRoles = () => {
             <div className="w-full h-80 max-h-80 flex flex-col items-start justify-start overflow-y-auto no-scrollbar">
               {workspaceMembers.map((member) => (
                 <div
-                  className="w-full last:border-none border-b border-primary-border py-3 px-2 bg-secondary-bg flex items-center justify-between gap-2"
+                  className="w-full last:border-none border-b border-primary-border py-2 px-2 bg-secondary-bg flex items-center justify-between gap-2"
                   key={member.id}
                 >
                   <span className="text-primary-text w-full text-left truncate flex items-center gap-2">
