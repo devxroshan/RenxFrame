@@ -50,7 +50,7 @@ export class AllExceptionFilter implements ExceptionFilter {
         path: ctx.getRequest<Request>().url,
         details: {},
       });
-    } else if (exception.code === '2025') {
+    } else if (exception.code === 'P2025') {
       res.status(HttpStatus.NOT_FOUND).json({
         ok: false,
         code: HttpStatus.NOT_FOUND,
