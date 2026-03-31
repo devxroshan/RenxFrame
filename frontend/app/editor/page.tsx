@@ -36,6 +36,15 @@ interface EditorProps {
   setZoom: React.Dispatch<React.SetStateAction<number>>;
 }
 
+interface PageElement {
+  id: string;
+  type: "container" | "text" | "image" | "button";
+  src?: string;
+  alt?: string;
+  children?: PageElement[] | string;
+  style?: React.CSSProperties;
+}
+
 const ZOOM_LEVELS = [10, 25, 50, 75, 80, 100, 125, 150, 175, 200, 250, 300];
 const DEFAULT_ZOOM = 0.8;
 
@@ -47,10 +56,39 @@ const ElementsIcon = {
 };
 
 const Elements = [
-  { name: "Container", icon: "box" },
-  { name: "Text", icon: "type" },
-  { name: "Image", icon: "image" },
-  { name: "Button", icon: "square" },
+  { name: "Container", icon: "box", htmlTag: "div" },
+  { name: "Text", icon: "type", htmlTag: "span" },
+  { name: "Image", icon: "image", htmlTag: "img" },
+  { name: "Button", icon: "square", htmlTag: "button" },
+];
+
+const pageElementsJsonTree: PageElement[] = [
+  {
+    id: "1",
+    type: "container",
+    children: [
+      {
+        id: "2",
+        type: "text",
+        children: "Rendered with RenxFrame!",
+        style: {
+          color: "white",
+          fontSize: "24px",
+          fontWeight: "bold",
+          fontStyle: "italic",
+        },
+      },
+    ],
+    style: {
+      width: "100%",
+      height: "100%",
+      backgroundColor: "black",
+      padding: "20px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  },
 ];
 
 const Editor = () => {
@@ -278,6 +316,7 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
   // States
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [allowPanAndZoom, setAllowPanAndZoom] = useState<boolean>(false);
 
   // Refs
   const mainEditorRef = useRef<HTMLDivElement>(null);
@@ -294,6 +333,7 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
   const handleMouseWheel = (e: WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
+      setAllowPanAndZoom(true);
       const zoomChange = e.deltaY > 0 ? -0.05 : 0.05;
       setZoom((prevZoom) => Math.min(Math.max(prevZoom + zoomChange, 0.1), 3));
     }
@@ -313,6 +353,59 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
     };
   }, []);
 
+  const jsStyleToCss = (style: React.CSSProperties) => {
+    return Object.entries(style)
+      .map(([key, value]) => {
+        const cssKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+        return `${cssKey}:${value}`;
+      })
+      .join(";");
+  };
+
+  const renderPageElements = (elements: PageElement[]) => {
+    const renderedElements: string[] = elements.map((element) => {
+      switch (element.type) {
+        case "container":
+          return `<div key=${element.id} style='${jsStyleToCss(element.style || {})}'>
+              ${
+                typeof element.children !== "string"
+                  ? renderPageElements(element.children || [])
+                  : element.children
+              }
+            </div>`;
+        case "text":
+          return `<span key=${element.id} style='${jsStyleToCss(element.style || {})}'>
+                ${
+                  typeof element.children !== "string"
+                    ? renderPageElements(element.children || [])
+                    : element.children
+                }
+              </span>`;
+        case "image":
+          return `<img
+              key=${element.id}
+              src=${element.src}
+              alt=${element.alt}
+              style='${jsStyleToCss(element.style || {}).toString()}'
+            />`;
+        case "button":
+          return `<button key=${element.id} style='${jsStyleToCss(element.style || {})}'>
+              ${
+                typeof element.children !== "string"
+                  ? renderPageElements(element.children || [])
+                  : element.children
+              }
+            </button>`;
+        default:
+          return "";
+      }
+    });
+
+    return renderedElements.join("");
+  };
+
+  console.log(renderPageElements(pageElementsJsonTree));
+
   return (
     <>
       <main
@@ -320,11 +413,13 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
         onMouseDown={(e) => {
           if (e.button === 1) {
             setIsDragging(true);
+            setAllowPanAndZoom(true);
           }
         }}
         onMouseUp={(e) => {
           if (e.button === 1) {
             setIsDragging(false);
+            setAllowPanAndZoom(false);
           }
         }}
         onMouseMove={(e) => {
@@ -337,7 +432,9 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
         onMouseLeave={() => setIsDragging(false)}
         className={`w-[60%] h-full bg-secondary-bg overflow-hidden flex items-center justify-center`}
       >
-        <div className="w-[60%] h-[93%] absolute z-10"></div>
+        {allowPanAndZoom && (
+          <div className="w-[60%] h-[93%] absolute z-10"></div>
+        )}
         <div
           style={{
             transform: `scale(${zoom}) translate(${pan.x}px, ${pan.y}px)`,
@@ -356,7 +453,7 @@ const MainEditor = ({ currentScreenSize, zoom, setZoom }: EditorProps) => {
             </span>
 
             <iframe
-              srcDoc="<span>Hello, World!</span>"
+              srcDoc={renderPageElements(pageElementsJsonTree)}
               className={`bg-white w-full h-full`}
             ></iframe>
           </div>
