@@ -191,6 +191,7 @@ export type WorkspaceWhereInput = {
   theme?: Prisma.EnumThemeNullableFilter<"Workspace"> | $Enums.Theme | null
   logo?: Prisma.StringNullableFilter<"Workspace"> | string | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  roles?: Prisma.RoleListRelationFilter
   sites?: Prisma.SiteListRelationFilter
 }
 
@@ -202,6 +203,7 @@ export type WorkspaceOrderByWithRelationInput = {
   theme?: Prisma.SortOrderInput | Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
+  roles?: Prisma.RoleOrderByRelationAggregateInput
   sites?: Prisma.SiteOrderByRelationAggregateInput
 }
 
@@ -216,6 +218,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   theme?: Prisma.EnumThemeNullableFilter<"Workspace"> | $Enums.Theme | null
   logo?: Prisma.StringNullableFilter<"Workspace"> | string | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  roles?: Prisma.RoleListRelationFilter
   sites?: Prisma.SiteListRelationFilter
 }, "id">
 
@@ -250,6 +253,7 @@ export type WorkspaceCreateInput = {
   theme?: $Enums.Theme | null
   logo?: string | null
   owner: Prisma.UserCreateNestedOneWithoutWorkspacesInput
+  roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput
   sites?: Prisma.SiteCreateNestedManyWithoutWorkspaceInput
 }
 
@@ -260,6 +264,7 @@ export type WorkspaceUncheckedCreateInput = {
   description: string
   theme?: $Enums.Theme | null
   logo?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
@@ -270,6 +275,7 @@ export type WorkspaceUpdateInput = {
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput
   sites?: Prisma.SiteUpdateManyWithoutWorkspaceNestedInput
 }
 
@@ -280,6 +286,7 @@ export type WorkspaceUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput
   sites?: Prisma.SiteUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
@@ -351,6 +358,11 @@ export type WorkspaceMinOrderByAggregateInput = {
   logo?: Prisma.SortOrder
 }
 
+export type WorkspaceNullableScalarRelationFilter = {
+  is?: Prisma.WorkspaceWhereInput | null
+  isNot?: Prisma.WorkspaceWhereInput | null
+}
+
 export type WorkspaceCreateNestedManyWithoutOwnerInput = {
   create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutOwnerInput, Prisma.WorkspaceUncheckedCreateWithoutOwnerInput> | Prisma.WorkspaceCreateWithoutOwnerInput[] | Prisma.WorkspaceUncheckedCreateWithoutOwnerInput[]
   connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutOwnerInput | Prisma.WorkspaceCreateOrConnectWithoutOwnerInput[]
@@ -411,12 +423,29 @@ export type NullableEnumThemeFieldUpdateOperationsInput = {
   set?: $Enums.Theme | null
 }
 
+export type WorkspaceCreateNestedOneWithoutRolesInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutRolesInput, Prisma.WorkspaceUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutRolesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneWithoutRolesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutRolesInput, Prisma.WorkspaceUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutRolesInput
+  upsert?: Prisma.WorkspaceUpsertWithoutRolesInput
+  disconnect?: Prisma.WorkspaceWhereInput | boolean
+  delete?: Prisma.WorkspaceWhereInput | boolean
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutRolesInput, Prisma.WorkspaceUpdateWithoutRolesInput>, Prisma.WorkspaceUncheckedUpdateWithoutRolesInput>
+}
+
 export type WorkspaceCreateWithoutOwnerInput = {
   id?: string
   name: string
   description: string
   theme?: $Enums.Theme | null
   logo?: string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput
   sites?: Prisma.SiteCreateNestedManyWithoutWorkspaceInput
 }
 
@@ -426,6 +455,7 @@ export type WorkspaceUncheckedCreateWithoutOwnerInput = {
   description: string
   theme?: $Enums.Theme | null
   logo?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
@@ -474,6 +504,7 @@ export type WorkspaceCreateWithoutSitesInput = {
   theme?: $Enums.Theme | null
   logo?: string | null
   owner: Prisma.UserCreateNestedOneWithoutWorkspacesInput
+  roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutSitesInput = {
@@ -483,6 +514,7 @@ export type WorkspaceUncheckedCreateWithoutSitesInput = {
   description: string
   theme?: $Enums.Theme | null
   logo?: string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutSitesInput = {
@@ -508,6 +540,7 @@ export type WorkspaceUpdateWithoutSitesInput = {
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutSitesInput = {
@@ -517,6 +550,63 @@ export type WorkspaceUncheckedUpdateWithoutSitesInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutRolesInput = {
+  id?: string
+  name: string
+  description: string
+  theme?: $Enums.Theme | null
+  logo?: string | null
+  owner: Prisma.UserCreateNestedOneWithoutWorkspacesInput
+  sites?: Prisma.SiteCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutRolesInput = {
+  id?: string
+  ownerId: string
+  name: string
+  description: string
+  theme?: $Enums.Theme | null
+  logo?: string | null
+  sites?: Prisma.SiteUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutRolesInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutRolesInput, Prisma.WorkspaceUncheckedCreateWithoutRolesInput>
+}
+
+export type WorkspaceUpsertWithoutRolesInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutRolesInput, Prisma.WorkspaceUncheckedUpdateWithoutRolesInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutRolesInput, Prisma.WorkspaceUncheckedCreateWithoutRolesInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutRolesInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutRolesInput, Prisma.WorkspaceUncheckedUpdateWithoutRolesInput>
+}
+
+export type WorkspaceUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.UserUpdateOneRequiredWithoutWorkspacesNestedInput
+  sites?: Prisma.SiteUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sites?: Prisma.SiteUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyOwnerInput = {
@@ -533,6 +623,7 @@ export type WorkspaceUpdateWithoutOwnerInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput
   sites?: Prisma.SiteUpdateManyWithoutWorkspaceNestedInput
 }
 
@@ -542,6 +633,7 @@ export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput
   sites?: Prisma.SiteUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
@@ -559,10 +651,12 @@ export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
  */
 
 export type WorkspaceCountOutputType = {
+  roles: number
   sites: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  roles?: boolean | WorkspaceCountOutputTypeCountRolesArgs
   sites?: boolean | WorkspaceCountOutputTypeCountSitesArgs
 }
 
@@ -574,6 +668,13 @@ export type WorkspaceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
    * Select specific fields to fetch from the WorkspaceCountOutputType
    */
   select?: Prisma.WorkspaceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountRolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoleWhereInput
 }
 
 /**
@@ -592,6 +693,7 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   theme?: boolean
   logo?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  roles?: boolean | Prisma.Workspace$rolesArgs<ExtArgs>
   sites?: boolean | Prisma.Workspace$sitesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
@@ -628,6 +730,7 @@ export type WorkspaceSelectScalar = {
 export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerId" | "name" | "description" | "theme" | "logo", ExtArgs["result"]["workspace"]>
 export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  roles?: boolean | Prisma.Workspace$rolesArgs<ExtArgs>
   sites?: boolean | Prisma.Workspace$sitesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -642,6 +745,7 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "Workspace"
   objects: {
     owner: Prisma.$UserPayload<ExtArgs>
+    roles: Prisma.$RolePayload<ExtArgs>[]
     sites: Prisma.$SitePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1046,6 +1150,7 @@ readonly fields: WorkspaceFieldRefs;
 export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  roles<T extends Prisma.Workspace$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sites<T extends Prisma.Workspace$sitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$sitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1475,6 +1580,30 @@ export type WorkspaceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Workspaces to delete.
    */
   limit?: number
+}
+
+/**
+ * Workspace.roles
+ */
+export type Workspace$rolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Role
+   */
+  select?: Prisma.RoleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Role
+   */
+  omit?: Prisma.RoleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoleInclude<ExtArgs> | null
+  where?: Prisma.RoleWhereInput
+  orderBy?: Prisma.RoleOrderByWithRelationInput | Prisma.RoleOrderByWithRelationInput[]
+  cursor?: Prisma.RoleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoleScalarFieldEnum | Prisma.RoleScalarFieldEnum[]
 }
 
 /**

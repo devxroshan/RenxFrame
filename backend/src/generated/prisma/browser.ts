@@ -32,3 +32,8 @@ export type Site = Prisma.SiteModel
  * 
  */
 export type Workspace = Prisma.WorkspaceModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel

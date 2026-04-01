@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Site: 'Site',
-  Workspace: 'Workspace'
+  Workspace: 'Workspace',
+  Role: 'Role'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -112,6 +113,24 @@ export const WorkspaceScalarFieldEnum = {
 } as const
 
 export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  roleName: 'roleName',
+  isProjectOnly: 'isProjectOnly',
+  siteId: 'siteId',
+  workspaceId: 'workspaceId',
+  canEdit: 'canEdit',
+  canEditMembers: 'canEditMembers',
+  canManageBilling: 'canManageBilling',
+  canEditRoles: 'canEditRoles',
+  canPublish: 'canPublish',
+  canEditDomain: 'canEditDomain',
+  canDeleteSite: 'canDeleteSite'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
 
 
 export const SortOrder = {

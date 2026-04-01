@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppConfigService } from './config/app-config.service';
 import { SiteModule } from './modules/sites/site.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
+import { RoleModule } from './modules/role/role.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module';
     PrismaModule,
     CommonModule,
     SiteModule,
-    WorkspaceModule
+    WorkspaceModule,
+    RoleModule
   ],
   controllers: [AppController],
   providers: [

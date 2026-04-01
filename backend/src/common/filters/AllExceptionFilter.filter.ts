@@ -16,6 +16,13 @@ import { MongoServerError } from 'mongodb';
 export class AllExceptionFilter implements ExceptionFilter {
   constructor(private readonly appConfigService: AppConfigService) {}
 
+  errorRes: {
+    msg: string;
+    code: string;
+    status: number;
+    details: {};
+  } = { msg: 'Check terminal for more info.', code: 'INTERNAL_SERVER_ERROR', details: {}, status: 500 };
+
   catch(exception: any, host: ArgumentsHost) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       return this.handlePrismaError(exception, host);
@@ -26,8 +33,11 @@ export class AllExceptionFilter implements ExceptionFilter {
       return this.handleJwtError(exception, host);
     } else if (exception instanceof HttpException) {
       return this.handleHTTPError(exception, host);
-    }
-    else if(exception instanceof MongoServerError || exception instanceof mongoose.Error.ValidationError || exception instanceof mongoose.Error.CastError){
+    } else if (
+      exception instanceof MongoServerError ||
+      exception instanceof mongoose.Error.ValidationError ||
+      exception instanceof mongoose.Error.CastError
+    ) {
       return this.handleMongoDBError(exception, host);
     } else {
       return this.handleUnknownError(exception, host);
@@ -42,24 +52,36 @@ export class AllExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
 
     if (exception.code === 'P2002') {
-      res.status(HttpStatus.CONFLICT).json({
-        ok: false,
-        code: HttpStatus.CONFLICT,
-        msg: `${(exception as any).meta?.driverAdapterError?.cause?.originalMessage}. Please choose a different value.`,
-        timestamp: new Date().toISOString(),
-        path: ctx.getRequest<Request>().url,
-        details: {},
-      });
+      this.errorRes.msg = `${(exception as any).meta?.driverAdapterError?.cause?.originalMessage}. Please choose a different value.`;
+      this.errorRes.code = 'CONFLICT';
+      this.errorRes.status = HttpStatus.CONFLICT;
     } else if (exception.code === 'P2025') {
-      res.status(HttpStatus.NOT_FOUND).json({
-        ok: false,
-        code: HttpStatus.NOT_FOUND,
-        msg: 'Record not found',
-        timestamp: new Date().toISOString(),
-        path: ctx.getRequest<Request>().url,
-        details: {},
-      });
+      this.errorRes.msg = `Record not found.`;
+      this.errorRes.code = 'NOT_FOUND';
+      this.errorRes.status = HttpStatus.NOT_FOUND;
+    } else if (exception.code === 'P2003') {
+      this.errorRes.msg = 'Internal Server Error. Try again later.';
+      this.errorRes.code = 'INTERNAL_SERVER_ERROR';
+      this.errorRes.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    } else {
+      if (this.appConfigService.isProduction) {
+        this.errorRes.msg = 'Internal Server Error. Try again later.';
+        this.errorRes.code = 'INTERNAL_SERVER_ERROR';
+        this.errorRes.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      } else {
+        console.log(exception);
+      }
     }
+
+    res.status(this.errorRes.status).json({
+      ok: false,
+      code: this.errorRes.code,
+      msg: this.errorRes.msg,
+      status: this.errorRes.status,
+      timestamp: new Date().toISOString(),
+      path: ctx.getRequest<Request>().url,
+      details: this.errorRes.details,
+    });
   }
 
   handleJwtError(
@@ -70,24 +92,32 @@ export class AllExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
 
     if (exception instanceof TokenExpiredError) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        ok: false,
-        code: HttpStatus.UNAUTHORIZED,
-        msg: 'Token expired',
-        timestamp: new Date().toISOString(),
-        path: ctx.getRequest<Request>().url,
-        details: {},
-      });
+      this.errorRes.code = 'UNAUTHORIZED';
+      this.errorRes.status = HttpStatus.UNAUTHORIZED;
+      this.errorRes.msg = 'Token expired.';
     } else if (exception instanceof JsonWebTokenError) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        ok: false,
-        code: HttpStatus.UNAUTHORIZED,
-        msg: 'Invalid token',
-        timestamp: new Date().toISOString(),
-        path: ctx.getRequest<Request>().url,
-        details: {},
-      });
+      this.errorRes.code = 'UNAUTHORIZED';
+      this.errorRes.status = HttpStatus.UNAUTHORIZED;
+      this.errorRes.msg = 'Invalid token.';
+    } else {
+      if (this.appConfigService.isProduction) {
+        this.errorRes.msg = 'Internal Server Error. Try again later.';
+        this.errorRes.code = 'INTERNAL_SERVER_ERROR';
+        this.errorRes.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      } else {
+        console.log(exception);
+      }
     }
+
+    res.status(this.errorRes.status).json({
+      ok: false,
+      code: this.errorRes.code,
+      status: this.errorRes.status,
+      msg: this.errorRes.msg,
+      timestamp: new Date().toISOString(),
+      path: ctx.getRequest<Request>().url,
+      details: this.errorRes.details,
+    });
   }
 
   handleHTTPError(exception: HttpException, host: ArgumentsHost) {
@@ -120,32 +150,33 @@ export class AllExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
 
-    let errorRes:{code:string, msg: string,status: HttpStatus, details: {}} = {
-      code: "UNKNOWN_ERROR",
-      msg: "Internal Server Error.",
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      details: {}
-    }
-
     if (exception instanceof MongoServerError && exception.code === 11000) {
-      errorRes.code = "CONFLICT";
-      errorRes.status = HttpStatus.CONFLICT
-      const key = Object.keys(exception.keyValue)[0]
+      this.errorRes.code = 'CONFLICT';
+      this.errorRes.status = HttpStatus.CONFLICT;
+      const key = Object.keys(exception.keyValue)[0];
 
-      errorRes.msg = `${key} ${exception.keyValue[key]} already exists.`
-      errorRes.details = {
+      this.errorRes.msg = `${key} ${exception.keyValue[key]} already exists.`;
+      this.errorRes.details = {
         field: [key],
-        value: [exception.keyValue[key]]
+        value: [exception.keyValue[key]],
+      };
+    } else {
+      if (this.appConfigService.isProduction) {
+        this.errorRes.code = 'INTERNAL_SERVER_ERROR';
+        this.errorRes.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        this.errorRes.msg = 'Internal Server Error. Try again later.';
+      }else {
+        console.log(exception)
       }
     }
 
-    res.status(errorRes.status).json({
+    res.status(this.errorRes.status).json({
       ok: false,
-      code: errorRes.code,
-      msg: errorRes.msg,
+      code: this.errorRes.code,
+      msg: this.errorRes.msg,
       timestamp: new Date().toISOString(),
       path: ctx.getRequest<Request>().url,
-      details: errorRes.details,
+      details: this.errorRes.details,
     });
   }
 
@@ -163,7 +194,7 @@ export class AllExceptionFilter implements ExceptionFilter {
         details: {},
       });
 
-      console.error('Unknown exception:', exception);
+      console.log('Unknown exception:', exception);
       return;
     }
 

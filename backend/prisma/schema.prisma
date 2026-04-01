@@ -32,6 +32,7 @@ model Site {
   id String @id @default(uuid())
   ownerId String
   owner User @relation(fields: [ownerId], references: [id])
+  roles Role[]
   workspaceId String
   workspace Workspace @relation(fields: [workspaceId], references: [id])
   name String
@@ -46,11 +47,29 @@ model Workspace {
   id String @id @default(uuid())
   owner User @relation(fields: [ownerId], references: [id])
   ownerId String
+  roles Role[]
   name String
   description String
   theme Theme? @default(dark)
   logo String? @default("")
   sites Site[]
+}
+
+model Role {
+  id String @id @default(uuid())
+  roleName String
+  isProjectOnly Boolean @default(false)
+  site Site? @relation(fields: [siteId], references: [id])
+  siteId String?
+  workspace Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId String?
+  canEdit Boolean @default(false)
+  canEditMembers Boolean @default(false)
+  canManageBilling Boolean @default(false)
+  canEditRoles Boolean @default(false)
+  canPublish Boolean @default(false)
+  canEditDomain Boolean @default(false)
+  canDeleteSite Boolean @default(false)
 }
 
 enum Theme {
