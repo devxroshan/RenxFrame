@@ -171,6 +171,11 @@ const General = () => {
         <textarea
           rows={10}
           cols={50}
+          value={currentWorkspace.description}
+          onChange={(e) => setCurrentWorkspace({
+            ...currentWorkspace,
+            description: e.target.value 
+          })}
           className="resize-none border border-primary-border rounded-lg outline-none focus:ring-2 focus:ring-primary-blue px-2 py-2"
         ></textarea>
       </div>
