@@ -10,6 +10,15 @@ import { useAppStore, Workspace } from "../stores/app.store";
 import Input, { InputVariant } from "../components/Input";
 import Button, { ButtonVariant } from "../components/Button";
 import { ELocalStorage } from "../config/local-storage.config";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+// API
+import {
+  DeleteRoleAPI,
+  GetAllProjectRolesAPI,
+  GetAllWorkspaceRolesAPI,
+} from "../api/role.api";
+import { ToastIcon } from "../config/types.config";
 
 enum ETabs {
   GENERAL = "general",
@@ -172,10 +181,12 @@ const General = () => {
           rows={10}
           cols={50}
           value={currentWorkspace.description}
-          onChange={(e) => setCurrentWorkspace({
-            ...currentWorkspace,
-            description: e.target.value 
-          })}
+          onChange={(e) =>
+            setCurrentWorkspace({
+              ...currentWorkspace,
+              description: e.target.value,
+            })
+          }
           className="resize-none border border-primary-border rounded-lg outline-none focus:ring-2 focus:ring-primary-blue px-2 py-2"
         ></textarea>
       </div>
@@ -267,6 +278,43 @@ const MembersRoles = () => {
       canDeleteSite: false,
     },
   });
+  const queryClient = useQueryClient()
+
+  // Stores
+  const appStore = useAppStore();
+
+  const workspaceRolesQuery = useQuery({
+    queryKey: ["workspace-roles"],
+    queryFn: async () =>
+      await GetAllWorkspaceRolesAPI(
+        localStorage.getItem(ELocalStorage.SELECTED_WORKSPACE_ID) as string,
+      ),
+    enabled: appStore.isAuth && appStore.isAuthChecked,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    retry: 1,
+  });
+
+  // Mutations
+  const deleteRoleMutation = useMutation({
+    mutationFn: DeleteRoleAPI,
+    onSuccess: (data) => {
+      if (data.ok) {
+        appStore.addToast({
+          code: "Role Deleted Successfully",
+          msg: "Role deleted successfully.",
+          iconType: ToastIcon.SUCCESS,
+        });
+      }
+    },
+    onError: (err) => {},
+  });
+
+  useEffect(() => {
+    if(workspaceRolesQuery.data?.data){
+      appStore.setRoles(workspaceRolesQuery.data.data ?? [])
+    }
+  }, [workspaceRolesQuery])
+  
 
   const workspaceMembers = [
     {
@@ -485,22 +533,32 @@ const MembersRoles = () => {
             </div>
 
             <div className="w-full h-80 max-h-80 flex flex-col overflow-y-auto no-scrollbar items-center justify-start">
-              {roles.map((role) => (
-                <div
-                  key={role.id}
-                  className="w-full last:border-none border-b border-primary-border py-2 px-2 flex gap-2 items-center justify-between hover:bg-tertiary-bg transition-all duration-300"
-                >
-                  <span className="w-full text-primary-text font-medium text-left truncate">
-                    {role.roleName}
-                  </span>
-                  <span className="w-full text-primary-text font-medium text-left truncate">
-                    {role.assigned + " members"}
-                  </span>
-                  <button className="w-full text-red-900 text-center outline-none border border-red-900 hover:bg-red-900 hover:text-white transition-all duration-300 cursor-pointer rounded-md active:scale-95">
-                    Delete
-                  </button>
-                </div>
-              ))}
+              {appStore.roles &&
+                appStore.roles.map(
+                  (role: { id: string; roleName: string }) => (
+                    <div
+                      key={role?.id}
+                      className="w-full last:border-none border-b border-primary-border py-2 px-2 flex gap-2 items-center justify-between hover:bg-tertiary-bg transition-all duration-300"
+                    >
+                      <span className="text-primary-text font-medium text-left truncate text-sm w-full">
+                        {role?.roleName}
+                      </span>
+                      <span className="w-full text-primary-text font-medium text-left truncate text-sm">
+                        {4 + " members"}
+                      </span>
+                      <button
+                        className={`w-full text-red-900 text-center outline-none border border-red-900 hover:bg-red-900 hover:text-white transition-all duration-300 cursor-pointer rounded-md active:scale-95`}
+                        disabled={deleteRoleMutation.isPending}
+                        onClick={() => {
+                          deleteRoleMutation.mutate(role.id)
+                          appStore.removeRole(role.id)
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ),
+                )}
             </div>
           </div>
 
@@ -917,13 +975,17 @@ const Domain = () => {
               key={domain.id}
               className="w-full max-h-80 lg:max-h-60 h-fit flex flex-col items-center justify-start"
             >
-              <div className={`w-full bg-secondary-bg ${currentActiveSubdomainList[domain.domain]?"rounded-tl-xl rounded-tr-xl":"rounded-xl"} border border-primary-border h-12 flex px-4 py-2 items-center justify-between`}>
+              <div
+                className={`w-full bg-secondary-bg ${currentActiveSubdomainList[domain.domain] ? "rounded-tl-xl rounded-tr-xl" : "rounded-xl"} border border-primary-border h-12 flex px-4 py-2 items-center justify-between`}
+              >
                 <ChevronDown
                   className={`text-primary-text ${currentActiveSubdomainList[domain.domain] ? "rotate-180" : ""} active:scale-75 transition-all duration-300 cursor-pointer`}
-                  onClick={() => setActiveSubdomainList((prev) => ({
-                    ...prev,
-                    [domain.domain]: !prev[domain.domain],
-                  }))}
+                  onClick={() =>
+                    setActiveSubdomainList((prev) => ({
+                      ...prev,
+                      [domain.domain]: !prev[domain.domain],
+                    }))
+                  }
                 />
 
                 <span className="font-semibold">{domain.domain}</span>
@@ -933,19 +995,21 @@ const Domain = () => {
                 </span>
               </div>
 
-              {currentActiveSubdomainList[domain.domain] && <div className="w-full h-fit flex flex-col items-center justify-start">
-                {domain.subdomains.map((subdomain) => (
-                  <div
-                    key={subdomain.id}
-                    className="w-full bg-tertiary-bg border-b border-r border-l border-primary-border last:rounded-bl-xl last:rounded-br-xl py-3 px-2 flex items-center justify-between"
-                  >
-                    <span className="font-medium">{subdomain.subdomain}</span>
-                    <span className="text-sm text-primary-text font-medium">
-                      {subdomain.recordType} - {subdomain.ip}
-                    </span>
-                  </div>
-                ))}
-              </div>}
+              {currentActiveSubdomainList[domain.domain] && (
+                <div className="w-full h-fit flex flex-col items-center justify-start">
+                  {domain.subdomains.map((subdomain) => (
+                    <div
+                      key={subdomain.id}
+                      className="w-full bg-tertiary-bg border-b border-r border-l border-primary-border last:rounded-bl-xl last:rounded-br-xl py-3 px-2 flex items-center justify-between"
+                    >
+                      <span className="font-medium">{subdomain.subdomain}</span>
+                      <span className="text-sm text-primary-text font-medium">
+                        {subdomain.recordType} - {subdomain.ip}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

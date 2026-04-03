@@ -1,34 +1,34 @@
-import { IsBoolean, IsDefined, IsNotEmpty, IsObject, IsString, ValidateNested } from "class-validator";
+import { IsBoolean, IsDefined, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 export class PermissionsDto {
     @IsBoolean()
-    @IsNotEmpty()
-    canEdit: boolean;
+    @IsOptional()
+    canEdit?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canManageBilling: boolean;
+    @IsOptional()
+    canManageBilling?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canPublish: boolean;
+    @IsOptional()
+    canPublish?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canDeleteSite: boolean;
+    @IsOptional()
+    canDeleteSite?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canEditMembers: boolean;
+    @IsOptional()
+    canEditMembers?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canEditDomain: boolean;
+    @IsOptional()
+    canEditDomain?: boolean;
 
     @IsBoolean()
-    @IsNotEmpty()
-    canEditRoles: boolean;
+    @IsOptional()
+    canEditRoles?: boolean;
 }
 
 export class CreateRoleDto {
@@ -46,7 +46,7 @@ export class CreateRoleDto {
     @IsString()
     workspaceId: string
 
-    @IsNotEmpty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => PermissionsDto)
     permissions: PermissionsDto

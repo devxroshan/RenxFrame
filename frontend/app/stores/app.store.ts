@@ -28,6 +28,14 @@ export interface Workspace {
   theme:'dark' | 'light'
 }
 
+export interface Role {
+  id: string,
+  roleName: string;
+  isProjectOnly: boolean,
+  siteId: string | null,
+  workspaceId: string | null,
+}
+
 type States = {
   toasts: Toast[];
   sites: Site[];
@@ -38,6 +46,7 @@ type States = {
   isSiteListActive: boolean;
   createNewProject: boolean;
   isWorkspaceActive: boolean;
+  roles: Role[]
 };
 
 type Actions = {
@@ -53,6 +62,8 @@ type Actions = {
   setWorkspace: (workspaces: Workspace[]) => void;
   getWorkspaceById: (id: string) => Workspace | undefined;
   setWorkspaceActive: (isActive: boolean) => void;
+  setRoles: (role: Role) => void;
+  removeRole: (roleId: string) => void;
 };
 
 
@@ -67,6 +78,7 @@ export const useAppStore = create<States & Actions>((set, get) => ({
   createNewProject: false,
   workspaces: [],
   isWorkspaceActive: false,
+  roles: [],
   addToast: (toast: Omit<Toast, "id">) =>
     set((state) => ({
       toasts: [
@@ -117,5 +129,11 @@ export const useAppStore = create<States & Actions>((set, get) => ({
   },
   setWorkspaceActive: (isActive) => set((state) => ({
     isWorkspaceActive: isActive
-  })) 
+  })), 
+  setRoles: (roles) => set((state) => ({
+    roles: [...state.roles, roles]
+  })),
+  removeRole: (roleId) => set((state) => ({
+    roles: state.roles.filter(role => role.id != roleId)
+  }))
 }));

@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Site: 'Site',
   Workspace: 'Workspace',
-  Role: 'Role'
+  Role: 'Role',
+  RoleAssigned: 'RoleAssigned'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -131,6 +132,15 @@ export const RoleScalarFieldEnum = {
 } as const
 
 export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const RoleAssignedScalarFieldEnum = {
+  id: 'id',
+  roleName: 'roleName',
+  assignedTo: 'assignedTo'
+} as const
+
+export type RoleAssignedScalarFieldEnum = (typeof RoleAssignedScalarFieldEnum)[keyof typeof RoleAssignedScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -37,3 +37,8 @@ export type Workspace = Prisma.WorkspaceModel
  * 
  */
 export type Role = Prisma.RoleModel
+/**
+ * Model RoleAssigned
+ * 
+ */
+export type RoleAssigned = Prisma.RoleAssignedModel

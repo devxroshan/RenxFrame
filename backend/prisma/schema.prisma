@@ -24,6 +24,7 @@ model User {
   isGoogleUser Boolean  @default(false)
   sites Site[]
   workspaces Workspace[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -70,6 +71,12 @@ model Role {
   canPublish Boolean @default(false)
   canEditDomain Boolean @default(false)
   canDeleteSite Boolean @default(false)
+}
+
+model RoleAssigned {
+  id String @id @default(uuid())
+  roleName String
+  assignedTo String
 }
 
 enum Theme {

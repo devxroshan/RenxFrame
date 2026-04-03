@@ -387,7 +387,8 @@ export const ModelName = {
   User: 'User',
   Site: 'Site',
   Workspace: 'Workspace',
-  Role: 'Role'
+  Role: 'Role',
+  RoleAssigned: 'RoleAssigned'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "site" | "workspace" | "role"
+    modelProps: "user" | "site" | "workspace" | "role" | "roleAssigned"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -703,6 +704,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RoleAssigned: {
+      payload: Prisma.$RoleAssignedPayload<ExtArgs>
+      fields: Prisma.RoleAssignedFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RoleAssignedFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RoleAssignedFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        findFirst: {
+          args: Prisma.RoleAssignedFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RoleAssignedFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        findMany: {
+          args: Prisma.RoleAssignedFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>[]
+        }
+        create: {
+          args: Prisma.RoleAssignedCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        createMany: {
+          args: Prisma.RoleAssignedCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RoleAssignedCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>[]
+        }
+        delete: {
+          args: Prisma.RoleAssignedDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        update: {
+          args: Prisma.RoleAssignedUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        deleteMany: {
+          args: Prisma.RoleAssignedDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RoleAssignedUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RoleAssignedUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>[]
+        }
+        upsert: {
+          args: Prisma.RoleAssignedUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleAssignedPayload>
+        }
+        aggregate: {
+          args: Prisma.RoleAssignedAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRoleAssigned>
+        }
+        groupBy: {
+          args: Prisma.RoleAssignedGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoleAssignedGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RoleAssignedCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoleAssignedCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -800,6 +875,15 @@ export const RoleScalarFieldEnum = {
 } as const
 
 export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const RoleAssignedScalarFieldEnum = {
+  id: 'id',
+  roleName: 'roleName',
+  assignedTo: 'assignedTo'
+} as const
+
+export type RoleAssignedScalarFieldEnum = (typeof RoleAssignedScalarFieldEnum)[keyof typeof RoleAssignedScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -993,6 +1077,7 @@ export type GlobalOmitConfig = {
   site?: Prisma.SiteOmit
   workspace?: Prisma.WorkspaceOmit
   role?: Prisma.RoleOmit
+  roleAssigned?: Prisma.RoleAssignedOmit
 }
 
 /* Types for Logging */

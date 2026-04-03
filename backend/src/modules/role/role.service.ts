@@ -26,7 +26,7 @@ export class RoleService {
       });
     }
 
-    if (createRoleDto.workspaceId.trim()) {
+    if (createRoleDto.workspaceId.trim() && !createRoleDto.isProjectOnly) {
       const isWorkspace = await this.prismaService.workspace.findUnique({
         where: {
           id: createRoleDto.workspaceId,
@@ -41,7 +41,7 @@ export class RoleService {
       }
     }
 
-    if (createRoleDto.siteId.trim()) {
+    if (createRoleDto.siteId.trim() && createRoleDto.isProjectOnly) {
       const isSite = await this.prismaService.site.findUnique({
         where: {
           id: createRoleDto.siteId,
@@ -65,7 +65,9 @@ export class RoleService {
           workspaceId: createRoleDto.isProjectOnly
             ? null
             : createRoleDto.workspaceId,
-          ...createRoleDto.permissions,
+            ...(createRoleDto.permissions && Object.keys(createRoleDto.permissions).length > 0 && {
+              ...createRoleDto.permissions
+            })
         },
       });
 
